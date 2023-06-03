@@ -16,6 +16,7 @@ $ cd Angular
 $ docker-compose run --rm node npm install
 $ docker-compose up -d
 ```
+open your browser on http://localhost:4200/
 
 # Wish List
 - fitDatasetの実装
