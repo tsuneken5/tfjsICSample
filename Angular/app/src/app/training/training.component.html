@@ -42,18 +42,18 @@
   <mat-card class="summary-area">
     <h3>training summary</h3>
     <div class="containar" fxLayout="row">
-      <div class="summary" [hidden]="!displaySummary">
+      <div class="summary" [hidden]="!displaySummary" [ngSwitch]="viewSummary">
         <button mat-button class="delete-button delete-area" *ngIf="canTrain()" color="primary"
           (click)="changeSummary()">
           <mat-icon>compare_arrows</mat-icon>
         </button>
 
-        <canvas baseChart id="training-summary" class="chart" *ngIf="canTrain() && viewSummary == viewSummarys[0]"
-          width="500" height="300" [data]="summaryChartData" [options]="summaryChartDoughnutOptions" [type]="'doughnut'"
+        <canvas baseChart id="training-summary" class="chart" *ngSwitchCase="viewSummarys[0]" width="500" height="300"
+          [data]="summaryChartData" [options]="summaryChartDoughnutOptions" [type]="'doughnut'"
           (chartClick)="summaryClick($event)"></canvas>
 
         <div id="training-summary-bar" class="chart">
-          <canvas baseChart *ngIf="canTrain() && viewSummary == viewSummarys[1]" height="300" [data]="summaryChartData"
+          <canvas baseChart *ngSwitchCase="viewSummarys[1]" height="300" [data]="summaryChartData"
             [options]="summaryChartBarOptions" [plugins]="summaryBarChartPlugins" [legend]="summaryBarChartLegend"
             [type]="'bar'"></canvas>
         </div>
