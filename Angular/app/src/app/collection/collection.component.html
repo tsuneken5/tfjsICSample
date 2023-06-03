@@ -1,0 +1,188 @@
+<h2>collection works!</h2>
+
+<mat-card class="summary-area">
+  <h3>collection summary</h3>
+  <div id="coll-summary-area" class="containar coll-summary-area" fxLayout="row" [hidden]="!displaySummary">
+    <div class="summary">
+      <button mat-button class="delete-button delete-area" *ngIf="!hasEmptyImage()" color="primary"
+        (click)="changeSummary()">
+        <mat-icon>compare_arrows</mat-icon>
+      </button>
+      <canvas baseChart id="coll-summary-doughnut" class="chart"
+        *ngIf="!hasEmptyImage() && viewSummary == viewSummarys[0]" width="500" height="300" [data]="summaryChartData"
+        [options]="summaryChartDoughnutOptions" [type]="'doughnut'" (chartClick)="summaryClick($event)"></canvas>
+      <div id="coll-summary-bar" class="chart">
+        <canvas baseChart *ngIf="!hasEmptyImage() && viewSummary == viewSummarys[1]" height="300"
+          [data]="summaryChartData" [options]="summaryChartBarOptions" [plugins]="summaryBarChartPlugins"
+          [legend]="summaryBarChartLegend" [type]="'bar'"></canvas>
+      </div>
+    </div>
+    <span class="add-image-message" *ngIf="hasEmptyImage()">add image samples</span>
+  </div>
+</mat-card>
+<mat-card>
+  <button mat-button color="primary" *ngIf="!displaySummary; else hiddenSummary" (click)="changeDisplaySummary()">
+    <mat-icon>keyboard_arrow_down</mat-icon>
+  </button>
+
+  <ng-template #hiddenSummary>
+    <button mat-button color="primary" (click)="changeDisplaySummary()">
+      <mat-icon>keyboard_arrow_up</mat-icon>
+    </button>
+  </ng-template>
+</mat-card>
+
+<mat-card class="upload-menu">
+  <h3>collection option</h3>
+  <div class="container params" fxLayout="row">
+    <input type="checkbox" class="param-box" [(ngModel)]="isCutSquare" [disabled]="isAddingImage">
+    <span class="param-label">Crop image to square</span>
+  </div>
+</mat-card>
+
+<mat-card class="collection-area" *ngFor="let labeledData of labeledDatas; let i = index; trackBy: myTrackBy">
+  <div id="coll-menu-area{{i}}" class="container" fxLayout="column">
+
+    <!-- remove delete -->
+    <div class="containar delete-area" fxLayout="row">
+      <button mat-button class="delete-button" color="primary" (click)="deleteImageInClass(i)"
+        [disabled]="openWebcamAreaFlg">
+        <mat-icon>delete_forever</mat-icon>
+      </button>
+      <button mat-button class="delete-button" color="primary" (click)="deleteClass(i)" [disabled]="openWebcamAreaFlg">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="container label-area" fxLayout="row">
+      <span class="class-index">{{ i + 1 }} : </span>
+      <div class="input-area">
+        <input id="coll-label{{i}}" class="label" [(ngModel)]="labeledDatas[i].label" (change)="changeLabelName(i)">
+        <span class="material-icons edit-icons">edit</span>
+      </div>
+    </div>
+
+    <span class="image-num" *ngIf="labeledData.imageInfos.length > 0">
+      {{ labeledData.imageInfos.length }} image samples
+    </span>
+    <span class="add-image-message" *ngIf="labeledData.imageInfos.length < minCanTrainImageNum">
+      add {{ minCanTrainImageNum }} or more image samples
+    </span>
+
+    <div class="container button-area" fxLayout="row">
+      <!-- upload -->
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="fileInput.click()" [disabled]="openWebcamAreaFlg">
+          <div class="container button" fxLayout="column">
+            <span class="material-icons">upload</span>
+            <span>upload</span>
+          </div>
+        </button>
+        <input hidden (change)="selectedFile(i)" multiple #fileInput accept="image/x-png, image/jpeg" type="file"
+          id="coll-file{{i}}">
+      </mat-card-actions>
+
+      <!-- webcam -->
+      <mat-card-actions>
+        <button mat-button color="primary" [disabled]="openWebcamAreaFlg">
+          <div class="container button" fxLayout="column" (click)="openWebcamArea(i)">
+            <span class="material-icons">switch_video</span>
+            <span>web camera</span>
+          </div>
+        </button>
+      </mat-card-actions>
+    </div>
+  </div>
+
+  <!-- webcam area -->
+  <div id="coll-webcam-area{{i}}" class="coll-webcam-area" style="display: none;">
+    <div class="containar" fxLayout="row">
+      <button mat-button class="delete-button delete-area" color="primary" (click)="closeWebcamArea(i)"
+        [disabled]="isAddingImage">
+        <mat-icon>compare_arrows</mat-icon>
+      </button>
+      <div class="container" fxLayout="column">
+        <video id="coll-webcam{{i}}" class="webcam" playsInline muted></video>
+        <button mat-button class="menu-button" color="primary" (click)="startRecord(i)" [disabled]="isAddingImage">
+          {{ recordLabel }}
+        </button>
+      </div>
+      <div class="container" fxLayout="column">
+        <!-- fps -->
+        <span class="param-title">FPS</span>
+        <div class="container params" fxLayout="row">
+          <div *ngFor="let fpsParam of fpsParams">
+            <input type="radio" name="fps{{i}}" class="param-radio" value="{{ fpsParam.value }}" [(ngModel)]="fps"
+              [disabled]="isAddingImage">
+            <span class="param-label">{{ fpsParam.label}}</span>
+          </div>
+        </div>
+
+        <!-- delay -->
+        <span class="param-title">Delay</span>
+        <div class="container params" fxLayout="row">
+          <div *ngFor="let delayParam of delayParams">
+            <input type="radio" name="delay{{i}}" class="param-radio" value="{{ delayParam.value }}" [(ngModel)]="delay"
+              [disabled]="isAddingImage">
+            <span class="param-label">{{ delayParam.label}}</span>
+          </div>
+        </div>
+
+        <!-- duration -->
+        <span class="param-title">Duration</span>
+        <div class="container params" fxLayout="row">
+          <div *ngFor="let durationParam of durationParams">
+            <input type="radio" name="duration{{i}}" class="param-radio" value="{{ durationParam.value }}"
+              [(ngModel)]="duration" [disabled]="isAddingImage">
+            <span class="param-label">{{ durationParam.label}}</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- images area -->
+  <div id="coll-thumbnails{{i}}" class="container thumbnails" fxLayout="row">
+
+  </div>
+</mat-card>
+
+<mat-card class="add-area">
+  <button mat-button color="primary" [disabled]="!canAddClass()" (click)="addClass()">
+    <mat-icon>add_box</mat-icon>
+    add class
+  </button>
+</mat-card>
+
+<mat-card class="menu-area">
+  <h3>collection menu</h3>
+  <div class="container" fxLayout="row">
+    <button mat-button class="menu-button" color="primary" (click)="deleteImageInList()" [disabled]="openWebcamAreaFlg">
+      <mat-icon>delete_forever</mat-icon>
+      delete selected images
+    </button>
+    <button mat-button class="menu-button" color="primary" (click)="deleteImageAll()" [disabled]="openWebcamAreaFlg">
+      <mat-icon>delete_forever</mat-icon>
+      delete all images
+    </button>
+    <button mat-button class="menu-button" color="primary" (click)="refreshDataset()" [disabled]="openWebcamAreaFlg">
+      <mat-icon>refresh</mat-icon>
+      refresh dataset
+    </button>
+
+  </div>
+
+  <div class="container" fxLayout="row">
+    <button mat-button class="menu-button" color="primary" (click)="downloadDataset()"
+      [disabled]="hasEmptyImage() || openWebcamAreaFlg">
+      <mat-icon>download</mat-icon>
+      download dataset
+    </button>
+    <button mat-button class="menu-button" color="primary" (click)="jsonInput.click()" [disabled]="openWebcamAreaFlg">
+      <mat-icon>upload</mat-icon>
+      upload dataset
+    </button>
+    <input hidden (change)="uploadDataset()" #jsonInput accept="application/json" type="file" id="json">
+  </div>
+</mat-card>

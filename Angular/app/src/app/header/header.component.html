@@ -1,0 +1,12 @@
+<mat-toolbar color="primary">
+  <h1>TensorFlow.js Image Classification Sample</h1>
+</mat-toolbar>
+
+<nav mat-tab-nav-bar class="mat-elevation-z8" [tabPanel]="tabPanel">
+  <a mat-tab-link *ngFor="let link of links" routerLink="{{ link.location }}" routerLinkActive #rla="routerLinkActive"
+    [active]="rla.isActive">
+    <mat-icon>{{ link.icon }}</mat-icon>
+    <span class="link-label">{{ link.label | uppercase }}</span>
+  </a>
+</nav>
+<mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>

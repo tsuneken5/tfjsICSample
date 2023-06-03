@@ -1,0 +1,80 @@
+<h2>preview works!</h2>
+<mat-card color="primary">
+  <h3>preview menu</h3>
+  <select [(ngModel)]="menu" class="select-menu" (change)="changeMenu()" [disabled]="!canDetect">
+    <option *ngFor="let detectMenu of detectMenus" [value]="detectMenu.value">
+      <span class="select-label">{{detectMenu.label}}</span>
+    </option>
+  </select>
+</mat-card>
+
+<mat-card>
+  <div class="setupStatus" *ngIf="setupStatus!=''">{{ setupStatus }}</div>
+  <div class="errorMessage" *ngIf="errorMessage!=''">{{ errorMessage }}</div>
+</mat-card>
+
+<!-- file -->
+<div class="detect-area" [ngSwitch]="menu">
+  <mat-card>
+    <div *ngSwitchCase="detectMenus[0].value">
+      <h3>File menu</h3>
+      <!-- upload -->
+      <div class="container button-area" fxLayout="row">
+        <mat-card-actions>
+          <button mat-button color="primary" (click)="fileInput.click()" [disabled]="!canDetect">
+            <div class="container button" fxLayout="column">
+              <span class="material-icons">upload</span>
+              <span>upload</span>
+            </div>
+          </button>
+          <input hidden (change)="selectedFile()" #fileInput accept="image/x-png, image/jpeg" type="file"
+            id="detect-file">
+        </mat-card-actions>
+      </div>
+    </div>
+
+    <!-- webcam -->
+    <div *ngSwitchCase="detectMenus[1].value">
+      <h3>Webcam menu</h3>
+      <div class="container button-area" fxLayout="row">
+        <mat-card-actions>
+          <!-- play -->
+          <button mat-button color="primary" (click)="playWebcam()" [disabled]="!canDetect || isPlay">
+            <div class="container button" fxLayout="column">
+              <span class="material-icons">play_arrow</span>
+              <span>play</span>
+            </div>
+          </button>
+
+          <button mat-button color="primary" (click)="pauseWebcam()" [disabled]="!canDetect || !isPlay">
+            <div class="container button" fxLayout="column">
+              <span class="material-icons">pause</span>
+              <span>pause</span>
+            </div>
+          </button>
+        </mat-card-actions>
+      </div>
+    </div>
+
+    <div *ngIf="canDetect">
+      <div class="container" fxLayout="row">
+        <!-- canvas -->
+        <div *ngSwitchCase="detectMenus[0].value">
+          <canvas id="detect-canvas"></canvas>
+        </div>
+
+        <!-- video -->
+        <div *ngSwitchCase="detectMenus[1].value">
+          <video id="detect-webcam" class="webcam" playsInline muted></video>
+        </div>
+
+        <!-- chart -->
+        <div id="detect-chart-area" class="detect-area">
+          <canvas baseChart id="detect-chart" class="detect" width="500" [data]="detectBarChartData"
+            [options]="detectBarChartOptions" [plugins]="detectBarChartPlugins" [legend]="detectBarChartLegend"
+            [type]="'bar'"></canvas>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+</div>

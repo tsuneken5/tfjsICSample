@@ -1,0 +1,83 @@
+import { Param } from './models/param';
+
+export const TMP_MODEL_NAME: string = 'tmp-model'
+
+export const DEFAULT_LABELED_DATAS_SIZE: number = 2;
+export const MAX_CLASS_SIZE: number = 10;
+
+export const THUMBNAIL_SIZE: number = 100;
+
+export const IMAGE_SIZE: number = 224;
+export const IMAGE_CHANNELS: number = 3;
+export const INPUT_SHAPE: number[] = [IMAGE_SIZE, IMAGE_SIZE, IMAGE_CHANNELS];
+
+export const COLL_WEBCAM_SIZE: number = 224;
+
+export const DETECT_VIDEO_SIZE: number = 512;
+export const DETECT_CANVAS_SIZE: number = 512;
+
+export const MIN_CAN_TRAIN_IMAGE_NUM: number = 10;
+export const MIN_CAN_TRAIN_CLASS_NUM: number = 2;
+
+export const SUMMARY_BAR_WIDTH: number = 75;
+export const DETECT_BAR_HEIGHT: number = 50;
+
+export const FPS_PARAMS: Param[] = [
+  new Param('1'), new Param('2'), new Param('3'), new Param('4'), new Param('5')
+];
+export const DEFAULT_FPS: string = FPS_PARAMS[4].value
+
+export const DELAY_PARAMS: Param[] = [
+  new Param('1'), new Param('2'), new Param('3')
+];
+export const DEFAULT_DELAY: string = DELAY_PARAMS[1].value
+
+export const DURATION_PARAMS: Param[] = [
+  new Param('1'), new Param('2'), new Param('3'), new Param('4'), new Param('5')
+];
+export const DEFAULT_DURATION = DURATION_PARAMS[4].value;
+
+
+export const BASE_MODEL_PARAMS: Param[] = [
+  new Param('MobileNet v1', 'mobilenet_v1',),
+  new Param('MobileNet v2', 'mobilenet_v2',),
+];
+export const DEFAULT_BASE_MODEL: string = BASE_MODEL_PARAMS[0].value
+
+export const EPOCHS_PARAMS: Param[] = [
+  new Param('10'), new Param('20'), new Param('30'), new Param('50'), new Param('100')
+];
+export const DEFAULT_EPOCHS: string = EPOCHS_PARAMS[3].value;
+
+export const BACTH_SIZE_PARAMS: Param[] = [
+  new Param('1'), new Param('2'), new Param('4'), new Param('8'), new Param('16')
+];
+export const DEFAULT_BACTH_SIZE: string = BACTH_SIZE_PARAMS[1].value;
+
+export const LEARNING_RATE_PARAMS: Param[] = [
+  new Param('0.01'), new Param('0.001'), new Param('0.0001'), new Param('0.00001')
+];
+export const DEFAULT_LEARNING_RATE: string = LEARNING_RATE_PARAMS[1].value;
+
+export const VALIDATION_SPLIT_PARAMS: Param[] = [
+  new Param('0.10'), new Param('0.15'), new Param('0.20'), new Param('0.25'), new Param('0.30')
+];
+export const DEFAULT_VALIDATION_SPLIT = VALIDATION_SPLIT_PARAMS[2].value;
+
+export const DETECT_MENUS: Param[] = [
+  new Param('File'), new Param('Webcam')
+];
+export const DEFAULT_DETECT_MENU: string = DETECT_MENUS[0].value;
+
+export const CHART_COLORS: string[] = [
+  '#ff7f7f',
+  '#ff7fbf',
+  '#ff7fff',
+  '#bf7fff',
+  '#7f7fff',
+  '#7fbfff',
+  '#7fffff',
+  '#7fffbf',
+  '#7fff7f',
+  '#bfff7f',
+];

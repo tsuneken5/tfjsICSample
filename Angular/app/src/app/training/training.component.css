@@ -1,0 +1,123 @@
+h3 {
+  margin: 10px;
+}
+
+.menu-area {
+  margin-top: 10px;
+}
+
+.delete-area {
+  position: absolute;
+  top: 0%;
+  right: 0%;
+}
+
+.delete-button {
+  margin-left: 5px;
+  background-color: #E8F0FE;
+}
+
+.warn {
+  display: inline-flex;
+  align-items: center;
+  color: red;
+}
+
+.class-index {
+  margin-right: 5px;
+}
+
+.label-area {
+  margin: 10px;
+  display: grid;
+  place-items: center;
+}
+
+.image-num {
+  margin-left: 10px;
+}
+
+.label {
+  border: none;
+}
+
+.thumbnails {
+  overflow-x: auto;
+  display: flex;
+  width: auto;
+}
+
+.thumbnail {
+  margin: 10px;
+}
+
+.summary-area {
+  margin-top: 10px;
+  padding: 5px;
+}
+
+.summary {
+  width: 100%;
+}
+
+.chart {
+  margin: 0 auto;
+}
+
+.train-menu-area {
+  margin-top: 20px;
+}
+
+.param-title {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.params {
+  margin-left: 20px;
+}
+
+.param-radio {
+  margin-left: 5px;
+}
+
+.param-label {
+  margin-left: 5px;
+}
+
+.training-button {
+  margin: 10px;
+  background-color: #E8F0FE;
+  border-radius: 20px;
+}
+
+.training-status {
+  margin: 10px;
+}
+
+.training-bar {
+  margin: 10px;
+}
+
+.cancel-status {
+  font-weight: bold;
+}
+
+.report-area {
+  margin: 10px;
+}
+
+.report-log-area {
+  margin: 10px;
+}
+
+.acc {
+  width: 300px;
+  height: 300px;
+}
+
+.loss {
+  margin-left: 20px;
+  width: 300px;
+  height: 300px;
+}

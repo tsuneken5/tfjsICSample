@@ -1,0 +1,46 @@
+h3 {
+  margin: 10px;
+}
+
+.select-menu {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  margin: 10px;
+  padding: 5px;
+  width: 100px;
+  border-radius: 20px;
+  background-color: #E8F0FE;
+}
+
+.select-label {
+  margin: 10px;
+}
+
+.setupStatus {
+  margin: 10px;
+  font-weight: bold;
+}
+
+.errorMessage {
+  margin: 10px;
+  font-weight: bold;
+  color: red;
+}
+
+.button-area {
+  margin: 10px;
+}
+
+.button {
+  padding: 5px;
+  background-color: #E8F0FE;
+  width: 100px;
+}
+
+.detect-area {
+  margin-top: 20px;
+  margin-left: 10px;
+  /* padding: 10px; */
+}
