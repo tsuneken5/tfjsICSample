@@ -9,6 +9,14 @@
 - TensorFlow.js : 4.6.0
 - Chart.js : 4.3.0
 
+# How to Use
+## Angular
+```
+$ cd Angular
+$ docker-compose run --rm node npm install
+$ docker-compose up -d
+```
+
 # Wish List
 - fitDatasetの実装
 - IndexedDBへのプロジェクトの保存
