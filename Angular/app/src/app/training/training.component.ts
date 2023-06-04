@@ -335,43 +335,50 @@ export class TrainingComponent {
     console.log((new Date()).toString(), 'finish build model', this.utilService.convertMsToTime(proccessTime));
   }
 
-  private async createDataset(): Promise<{ images: tf.Tensor, labels: tf.Tensor }> {
+  private arrayShuffle(array: any[]): any[] {
+    for (let i = (array.length - 1); 0 < i; i--) {
+
+      let r = Math.floor(Math.random() * (i + 1));
+
+      let tmp = array[i];
+      array[i] = array[r];
+      array[r] = tmp;
+    }
+    return array;
+  }
+
+  private async createDataset(): Promise<{ trainImages: ImageData[], trainLabels: number[], valImages: ImageData[], valLabels: number[] }> {
     console.log((new Date()).toString(), 'start create datasets');
     const start = performance.now();
 
-    let imagesDatasets = [];
-    let labelsDatasets = [];
+    let trainImages: ImageData[] = [];
+    let trainLabels: number[] = [];
+    let valImages: ImageData[] = [];
+    let valLabels: number[] = [];
 
-    for (let i = 0; i < this.labeledDatas.length; i++) {
-      const index = this.trainClassList.indexOf(i);
-      if (index > -1) {
-        for (let imageInfo of this.labeledDatas[i].imageInfos) {
-          if (imageInfo.isTrain) {
-            let label = tf.oneHot(index, this.trainClassList.length);
-
-            let imageData = await this.canvasService.getTrainingImage(imageInfo.base64);
-            let image = await tf.browser.fromPixels(imageData);
-            let imageTensor = await tf.image
-              .resizeBilinear(image, [this.inputShape[0], this.inputShape[1]], true)
-              .div(255)
-              .reshape(this.inputShape);
-
-            labelsDatasets.push(label);
-            imagesDatasets.push(imageTensor);
-
-            image.dispose();
-            imageTensor.dispose();
+    for (let index of this.trainClassList) {
+      const trainNum = this.labeledDatas[index].isTrainNum();
+      const splitNum = Math.round(trainNum * Number(this.validationSplit));
+      let count = 0;
+      const imageInfos = this.arrayShuffle(this.labeledDatas[index].imageInfos.slice())
+      for (let imageInfo of imageInfos) {
+        if (imageInfo.isTrain) {
+          if (count < splitNum) {
+            valImages.push(await this.canvasService.getTrainingImage(imageInfo.base64));
+            valLabels.push(index);
+          } else {
+            trainImages.push(await this.canvasService.getTrainingImage(imageInfo.base64));
+            trainLabels.push(index);
           }
+          count += 1;
         }
       }
     }
 
-    tf.util.shuffleCombo(imagesDatasets, labelsDatasets);
-
     const proccessTime = performance.now() - start;
     console.log((new Date()).toString(), 'finish create datasets', this.utilService.convertMsToTime(proccessTime));
 
-    return { images: tf.stack(imagesDatasets), labels: tf.stack(labelsDatasets) };
+    return { trainImages: trainImages, trainLabels: trainLabels, valImages: valImages, valLabels: valLabels };
   }
 
   private drawReport(): void {
@@ -456,18 +463,60 @@ export class TrainingComponent {
     await this.buildModel();
 
     this.trainingStatus = 'preparing training data...';
-    let dataset = await this.createDataset();
+    const dataset = await this.createDataset();
 
+    // create training data
+    tf.util.shuffleCombo(dataset.trainImages, dataset.trainLabels);
+
+    const getTrainImages = await dataset.trainImages.map(image => {
+      const data = tf.browser.fromPixels(image);
+      const cachedImage = tf.image.resizeBilinear(data, [this.inputShape[0], this.inputShape[1]], true);
+      return cachedImage.div(255).reshape(this.inputShape);
+    });
+
+    const getTrainLabels = await dataset.trainLabels.map(label => {
+      const cachedLabel = tf.oneHot(label, this.trainClassList.length);
+      return cachedLabel;
+    });
+
+    const trainImages = getTrainImages;
+    const trainLabels = getTrainLabels;
+
+    const xTrain = tf.data.array(trainImages);
+    const yTrain = tf.data.array(trainLabels);
+    const train = tf.data.zip({ xs: xTrain, ys: yTrain }).shuffle(100).batch(Number(this.batchSize));
+
+    // create validation data
+    tf.util.shuffleCombo(dataset.valImages, dataset.valLabels);
+
+    const getValImages = await dataset.valImages.map(image => {
+      const data = tf.browser.fromPixels(image);
+      const cachedImage = tf.image.resizeBilinear(data, [this.inputShape[0], this.inputShape[1]], true);
+      return cachedImage.div(255).reshape(this.inputShape);
+    });
+
+    const getValLabels = await dataset.valLabels.map(label => {
+      const cachedLabel = tf.oneHot(label, this.trainClassList.length);
+      return cachedLabel;
+    });
+
+    const valImages = getValImages;
+    const valLabels = getValLabels;
+
+    const xVal = tf.data.array(valImages);
+    const yVal = tf.data.array(valLabels);
+    const val = tf.data.zip({ xs: xVal, ys: yVal }).shuffle(100).batch(Number(this.batchSize));
+
+    this.utilService.printMemory();
     this.trainingStatus = 'training... 0 / ' + this.epochs;
     this.trainingRate = 0;
 
     const preparingTime = performance.now() - startPreparing;
     const startTraining = performance.now();
-    const history = await this.model.fit(dataset.images, dataset.labels, {
-      validationSplit: Number(this.validationSplit),
-      shuffle: true,
+
+    const history = await this.model.fitDataset(train, {
+      validationData: val,
       epochs: Number(this.epochs),
-      batchSize: Number(this.batchSize),
       callbacks: {
         onBatchEnd: () => {
           if (this.isCancelTraining) {
@@ -486,6 +535,7 @@ export class TrainingComponent {
 
           this.trainingRate = Math.trunc(((currentEpoch) / Number(this.epochs)) * 100);
           console.log(currentEpoch, "log :", logs);
+          this.utilService.printMemory();
           if (this.isCancelTraining) {
             this.cancelStatus = 'canceled training'
             this.model.stopTraining = true;
@@ -493,8 +543,6 @@ export class TrainingComponent {
         }
       },
     });
-    dataset.images.dispose();
-    dataset.labels.dispose();
 
     this.isTraining = false;
     this.trainingStatus = '';
