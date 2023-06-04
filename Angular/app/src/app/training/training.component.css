@@ -41,16 +41,6 @@ h3 {
   border: none;
 }
 
-.thumbnails {
-  overflow-x: auto;
-  display: flex;
-  width: auto;
-}
-
-.thumbnail {
-  margin: 10px;
-}
-
 .summary-area {
   margin-top: 10px;
   padding: 5px;

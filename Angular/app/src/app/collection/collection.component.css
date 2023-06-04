@@ -108,26 +108,12 @@ h3 {
   width: 100px;
 }
 
-.thumbnail {
-  margin: 5px;
-}
-
 .add-area {
   margin-top: 20px;
   border: 2px dotted black;
 }
 
 .coll-webcam-area {
-  margin: 10px;
-}
-
-.thumbnails {
-  overflow-x: auto;
-  display: flex;
-  width: auto;
-}
-
-.thumbnail {
   margin: 10px;
 }
 
