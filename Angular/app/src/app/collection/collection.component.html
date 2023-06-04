@@ -142,10 +142,8 @@
     </div>
   </div>
 
-  <!-- images area -->
-  <div id="coll-thumbnails{{i}}" class="container thumbnails" fxLayout="row">
-
-  </div>
+  <!-- thumbnail area -->
+  <app-thumbnail [index]="i" [prefix]="prefix" (clickThumbnail)="changeDeleteFlag($event)"></app-thumbnail>
 </mat-card>
 
 <mat-card class="add-area">

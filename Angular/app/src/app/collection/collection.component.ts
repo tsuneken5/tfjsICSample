@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChildren, QueryList } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -11,12 +11,18 @@ import { LabeledData } from '../models/labeled-data';
 import { ImageInfo } from '../models/image-info';
 import { Param } from '../models/param';
 
+import { ThumbnailComponent } from '../thumbnail/thumbnail.component';
+
 @Component({
   selector: 'app-collection',
   templateUrl: './collection.component.html',
   styleUrls: ['./collection.component.css']
 })
 export class CollectionComponent {
+  @ViewChildren(ThumbnailComponent) thumbnailComponent!: QueryList<ThumbnailComponent>;
+
+  public prefix: string = constant.PREFIX_COLLECTION;
+
   public labeledDatas: LabeledData[] = [];
   public isAddingImage: boolean = false;
 
@@ -151,52 +157,54 @@ export class CollectionComponent {
     };
   }
 
-  private changeDeleteFlag(id: number): void {
-    const index = this.deleteList.indexOf(id);
-    const canvas = document.getElementById('coll-thumbnail' + id) as HTMLCanvasElement;
+  private getClassIndex(id: number): number {
+    let index = -1;
 
-    if (index > -1) {
-      this.deleteList.splice(index, 1);
-      let imgStr = ''
-      for (let labeledData of this.labeledDatas) {
-        let idList = labeledData.imageInfos.map(function (o: any) { return o.id; });
+    for (let i = 0; i < this.labeledDatas.length; i++) {
+      const idList: number[] = this.labeledDatas[i].imageInfos.map(function (o: any) { return o.id; });
+      if (idList.includes(id)) {
+        index = i;
+        break;
+      }
+    }
+
+    return index;
+  }
+
+  public changeDeleteFlag(id: number): void {
+    const indexList = this.deleteList.indexOf(id);
+    const classIndex = this.getClassIndex(id);
+
+    const thumbnailComponent = this.thumbnailComponent.toArray()[classIndex];
+
+    if (indexList > -1) {
+      this.deleteList.splice(indexList, 1);
+      for (let i = 0; i < this.labeledDatas.length; i++) {
+        let idList = this.labeledDatas[i].imageInfos.map(function (o: any) { return o.id; });
         let index = idList.indexOf(id);
         if (index > -1) {
-          imgStr = labeledData.imageInfos[index].base64;
+          thumbnailComponent.drawThumbnail(this.labeledDatas[i].imageInfos[index].base64, id);
           break;
         }
       }
-
-      this.canvasService.drawThumbnail(canvas, imgStr, id);
     } else {
       this.deleteList.push(id);
-      this.canvasService.changeGrayScale(canvas);
+      thumbnailComponent.changeGrayScale(id);
     }
   }
 
   private deleteThumbnail(id: number): void {
-    const canvas = document.getElementById('coll-thumbnail' + id) as HTMLElement;
-    canvas.remove();
+    const index = this.getClassIndex(id);
+
+    const thumbnailComponent = this.thumbnailComponent.toArray()[index];
+    thumbnailComponent.deleteThumbnail(id);
+
     this.drawSummary();
   }
 
   private async addThumbnail(index: number, imgStr: string, id: number): Promise<void> {
-    const thumbnailsElem = document.getElementById('coll-thumbnails' + index) as HTMLDivElement;
-
-    const canvas: any = document.createElement('canvas') as HTMLCanvasElement;
-    canvas.id = 'coll-thumbnail' + id;
-    canvas.classList.add('thumbnail');
-    canvas.style.margin = '5px';
-
-    canvas.style.border = 'thin solid red';
-    const that = this;
-    canvas.addEventListener('click', function () {
-      that.changeDeleteFlag(id);
-    });
-
-    this.canvasService.drawThumbnail(canvas, imgStr, id);
-
-    thumbnailsElem.prepend(canvas);
+    const thumbnailComponent = this.thumbnailComponent.toArray()[index];
+    thumbnailComponent.addThumbnail(imgStr, id);
     this.drawSummary();
   }
 
@@ -329,6 +337,8 @@ export class CollectionComponent {
       this.deleteList.splice(deleteListIndex, 1)
     }
 
+    this.deleteThumbnail(id);
+
     for (let i = 0; i < this.labeledDatas.length; i++) {
       let idList = this.labeledDatas[i].imageInfos.map(function (o: any) { return o.id; });
       let index = idList.indexOf(id);
@@ -337,8 +347,6 @@ export class CollectionComponent {
         break;
       }
     }
-
-    this.deleteThumbnail(id);
   }
 
   public deleteImageInClass(index: number): void {

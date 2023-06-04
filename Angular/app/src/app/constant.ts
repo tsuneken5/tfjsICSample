@@ -5,7 +5,12 @@ export const TMP_MODEL_NAME: string = 'tmp-model'
 export const DEFAULT_LABELED_DATAS_SIZE: number = 2;
 export const MAX_CLASS_SIZE: number = 10;
 
-export const THUMBNAIL_SIZE: number = 100;
+export const THUMBNAIL_SIZE: number = 150;
+export const THUMBNAIL_LAYOUT_MENUS: string[] = ['overflow-x', 'overflow-y'];
+export const DEFAUL_THUMBNAIL_LAYOUT: string = THUMBNAIL_LAYOUT_MENUS[0];
+
+export const PREFIX_COLLECTION: string = 'coll';
+export const PREFIX_TRAINING: string = 'train';
 
 export const IMAGE_SIZE: number = 224;
 export const IMAGE_CHANNELS: number = 3;

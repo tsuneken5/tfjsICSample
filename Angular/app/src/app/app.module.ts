@@ -22,6 +22,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 
 import { NgChartsModule } from 'ng2-charts';
+import { ThumbnailComponent } from './thumbnail/thumbnail.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { NgChartsModule } from 'ng2-charts';
     HeaderComponent,
     CollectionComponent,
     TrainingComponent,
-    PreviewComponent
+    PreviewComponent,
+    ThumbnailComponent
   ],
   imports: [
     BrowserModule,

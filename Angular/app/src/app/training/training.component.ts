@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChildren, QueryList } from '@angular/core';
 import * as tf from '@tensorflow/tfjs';
 
 import { ChartConfiguration } from 'chart.js';
@@ -13,6 +13,8 @@ import { LabeledData } from '../models/labeled-data';
 import { ReportLog, ReportRogLabels } from '../models/report-log';
 import { Param } from '../models/param';
 
+import { ThumbnailComponent } from '../thumbnail/thumbnail.component';
+
 @Component({
   selector: 'app-training',
   templateUrl: './training.component.html',
@@ -20,6 +22,10 @@ import { Param } from '../models/param';
 })
 
 export class TrainingComponent {
+  @ViewChildren(ThumbnailComponent) thumbnailComponent!: QueryList<ThumbnailComponent>;
+
+  public prefix: string = constant.PREFIX_TRAINING;
+
   public labeledDatas: LabeledData[] = [];
   private minCanTrainImageNum = constant.MIN_CAN_TRAIN_IMAGE_NUM;
   private minCanTrainClassNum = constant.MIN_CAN_TRAIN_CLASS_NUM;
@@ -151,6 +157,7 @@ export class TrainingComponent {
   public changeDisplaySummary(): void {
     this.displaySummary = !this.displaySummary;
   }
+
   public summaryClick(event: any): void {
     if (event.active.length > 0) {
       const index = event.active[0].index;
@@ -200,35 +207,38 @@ export class TrainingComponent {
   }
 
   private async addThumbnail(index: number, imgStr: string, id: number): Promise<void> {
-    const that = this;
-    const thumbnailsElem = document.getElementById('train-thumbnails' + index) as HTMLDivElement;
-
-    const canvas: any = document.createElement('canvas') as HTMLCanvasElement;
-    canvas.id = 'train-thumbnail' + id;
-    canvas.classList.add('thumbnail');
-    canvas.style.margin = '5px';
-
-    canvas.style.border = 'thin solid red';
-    canvas.addEventListener('click', function () {
-      that.changeIsTrainImage(id);
-    });
-
-    this.canvasService.drawThumbnail(canvas, imgStr, id);
-    thumbnailsElem.prepend(canvas);
+    const thumbnailComponent = this.thumbnailComponent.toArray()[index];
+    thumbnailComponent.addThumbnail(imgStr, id);
 
     let idList = this.labeledDatas[index].imageInfos.map(function (o: any) { return o.id; });
     let imageIndex = idList.indexOf(id);
     if (!(this.labeledDatas[index].isTrain && this.labeledDatas[index].imageInfos[imageIndex].isTrain)) {
       await this.utilService.sleep(100);
-      this.canvasService.changeGrayScale(canvas);
+      thumbnailComponent.changeGrayScale(id);
     }
   }
 
-  private changeIsTrainImage(id: number): void {
+  private getClassIndex(id: number): number {
+    let index = -1;
+
+    for (let i = 0; i < this.labeledDatas.length; i++) {
+      const idList: number[] = this.labeledDatas[i].imageInfos.map(function (o: any) { return o.id; });
+      if (idList.includes(id)) {
+        index = i;
+        break;
+      }
+    }
+
+    return index;
+  }
+
+  public changeIsTrainImage(id: number): void {
     if (this.isTraining) {
       return;
     }
-    const canvas = document.getElementById('train-thumbnail' + id) as HTMLCanvasElement;
+
+    let classIndex = this.getClassIndex(id);
+    const thumbnailComponent = this.thumbnailComponent.toArray()[classIndex];
 
     for (let labeledData of this.labeledDatas) {
       let idList = labeledData.imageInfos.map(function (o: any) { return o.id; });
@@ -237,11 +247,11 @@ export class TrainingComponent {
         labeledData.imageInfos[index].isTrain = !labeledData.imageInfos[index].isTrain;
         if (labeledData.imageInfos[index].isTrain) {
           if (labeledData.isTrain) {
-            this.canvasService.drawThumbnail(canvas, labeledData.imageInfos[index].base64, id);
+            thumbnailComponent.drawThumbnail(labeledData.imageInfos[index].base64, id);
           }
         }
         else {
-          this.canvasService.changeGrayScale(canvas);
+          thumbnailComponent.changeGrayScale(id);
         }
         break;
       }
@@ -251,15 +261,15 @@ export class TrainingComponent {
   }
 
   public changeIsTrainClass(index: number): void {
+    const thumbnailComponent = this.thumbnailComponent.toArray()[index];
+
     this.labeledDatas[index].isTrain = !this.labeledDatas[index].isTrain
     for (let imageInfo of this.labeledDatas[index].imageInfos) {
-      const canvas = document.getElementById('train-thumbnail' + imageInfo.id) as HTMLCanvasElement;
-
       if (this.labeledDatas[index].isTrain && imageInfo.isTrain) {
-        this.canvasService.drawThumbnail(canvas, imageInfo.base64, imageInfo.id);
+        thumbnailComponent.drawThumbnail(imageInfo.base64, imageInfo.id);
       }
       else {
-        this.canvasService.changeGrayScale(canvas);
+        thumbnailComponent.changeGrayScale(imageInfo.id);
       }
     }
     this.changeSummaryBarWidth();
@@ -267,12 +277,13 @@ export class TrainingComponent {
   }
 
   public clearIsTrainFlag(index: number): void {
+    const thumbnailComponent = this.thumbnailComponent.toArray()[index];
+
     this.labeledDatas[index].isTrain = true;
     for (let imageInfo of this.labeledDatas[index].imageInfos) {
-      const canvas = document.getElementById('train-thumbnail' + imageInfo.id) as HTMLCanvasElement;
 
       imageInfo.isTrain = true;
-      this.canvasService.drawThumbnail(canvas, imageInfo.base64, imageInfo.id);
+      thumbnailComponent.drawThumbnail(imageInfo.base64, imageInfo.id);
     }
     this.changeSummaryBarWidth();
     this.drawSummary();

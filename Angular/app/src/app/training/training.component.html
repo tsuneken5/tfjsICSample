@@ -29,10 +29,8 @@
       <span class="image-num">{{ labeledDatas[i].isTrainNum() }} / {{ labeledData.imageInfos.length }} </span>
     </div>
 
-    <!-- images -->
-    <div id="train-thumbnails{{i}}" class="container thumbnails" fxLayout="row">
-
-    </div>
+    <!-- thumbnail area -->
+    <app-thumbnail [index]="i" [prefix]="prefix" (clickThumbnail)="changeIsTrainImage($event)"></app-thumbnail>
   </div>
 
 </mat-card>
