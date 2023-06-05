@@ -30,7 +30,8 @@
     </div>
 
     <!-- thumbnail area -->
-    <app-thumbnail [index]="i" [prefix]="prefix" (clickThumbnail)="changeIsTrainImage($event)"></app-thumbnail>
+    <app-thumbnail [index]="i" [prefix]="prefix" (selectThumbnail)="changeIsTrainImage($event)"
+      (clickThumbnail)="getImageInfo($event)"></app-thumbnail>
   </div>
 
 </mat-card>

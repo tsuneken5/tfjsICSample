@@ -171,25 +171,27 @@ export class CollectionComponent {
     return index;
   }
 
-  public changeDeleteFlag(id: number): void {
-    const indexList = this.deleteList.indexOf(id);
-    const classIndex = this.getClassIndex(id);
+  public getImageInfo(args: any): void {
+    let idList = this.labeledDatas[args.index].imageInfos.map(function (o: any) { return o.id; });
+    const index = idList.indexOf(args.id);
 
-    const thumbnailComponent = this.thumbnailComponent.toArray()[classIndex];
+    const thumbnailComponent = this.thumbnailComponent.toArray()[args.index];
+    thumbnailComponent.attachCanvas(this.labeledDatas[args.index].imageInfos[index]);
+  }
+
+  public changeDeleteFlag(args: any): void {
+    const indexList = this.deleteList.indexOf(args.id);
+
+    const thumbnailComponent = this.thumbnailComponent.toArray()[args.index];
 
     if (indexList > -1) {
       this.deleteList.splice(indexList, 1);
-      for (let i = 0; i < this.labeledDatas.length; i++) {
-        let idList = this.labeledDatas[i].imageInfos.map(function (o: any) { return o.id; });
-        let index = idList.indexOf(id);
-        if (index > -1) {
-          thumbnailComponent.drawThumbnail(this.labeledDatas[i].imageInfos[index].base64, id);
-          break;
-        }
-      }
+      let idList = this.labeledDatas[args.index].imageInfos.map(function (o: any) { return o.id; });
+      let index = idList.indexOf(args.id);
+      thumbnailComponent.drawThumbnail(this.labeledDatas[args.index].imageInfos[index].base64, args.id);
     } else {
-      this.deleteList.push(id);
-      thumbnailComponent.changeGrayScale(id);
+      this.deleteList.push(args.id);
+      thumbnailComponent.changeGrayScale(args.id);
     }
   }
 
@@ -349,9 +351,9 @@ export class CollectionComponent {
     }
   }
 
-  public deleteImageInClass(index: number): void {
-    while (this.labeledDatas[index].imageInfos.length > 0) {
-      this.deleteImage(this.labeledDatas[index].imageInfos[0].id);
+  public selectImageInClass(index: number): void {
+    for (let imageInfo of this.labeledDatas[index].imageInfos) {
+      this.changeDeleteFlag({ id: imageInfo.id, index: index });
     }
   }
 
@@ -363,7 +365,9 @@ export class CollectionComponent {
 
   public deleteImageAll(): void {
     for (let i = 0; i < this.labeledDatas.length; i++) {
-      this.deleteImageInClass(i);
+      while (this.labeledDatas[i].imageInfos.length > 0) {
+        this.deleteImage(this.labeledDatas[i].imageInfos[0].id);
+      }
     }
   }
 

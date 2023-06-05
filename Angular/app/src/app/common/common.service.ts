@@ -21,6 +21,8 @@ export class CommonService {
   private reportLogs: ReportLog[] = [];
   private history: any = null;
 
+  private overlayCanvas: any = null;
+
   constructor() {
     this.labeledDatas = [];
     for (let i = 0; i < constant.DEFAULT_LABELED_DATAS_SIZE; i++) {
@@ -96,7 +98,15 @@ export class CommonService {
     return this.history;
   }
 
-  public setHistory(history: any): any {
+  public setHistory(history: any): void {
     this.history = history;
+  }
+
+  public getOverlayCanvas(): any {
+    return this.overlayCanvas;
+  }
+
+  public setOverlayCanvas(overlayCanvas: any): void {
+    this.overlayCanvas = overlayCanvas;
   }
 }

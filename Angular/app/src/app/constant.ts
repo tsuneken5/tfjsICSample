@@ -12,9 +12,8 @@ export const DEFAUL_THUMBNAIL_LAYOUT: string = THUMBNAIL_LAYOUT_MENUS[0];
 export const PREFIX_COLLECTION: string = 'coll';
 export const PREFIX_TRAINING: string = 'train';
 
-export const IMAGE_SIZE: number = 224;
-export const IMAGE_CHANNELS: number = 3;
-export const INPUT_SHAPE: number[] = [IMAGE_SIZE, IMAGE_SIZE, IMAGE_CHANNELS];
+export const IMAGE_SIZE: number = 512;
+export const INPUT_SHAPE: number[] = [224, 224, 3];
 
 export const COLL_WEBCAM_SIZE: number = 224;
 

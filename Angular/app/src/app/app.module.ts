@@ -9,9 +9,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CollectionComponent } from './collection/collection.component';
 import { TrainingComponent } from './training/training.component';
 import { PreviewComponent } from './preview/preview.component';
+import { ThumbnailComponent } from './thumbnail/thumbnail.component';
 
 import { FormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { PortalModule } from '@angular/cdk/portal'
+import { OverlayModule } from '@angular/cdk/overlay';
+
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -22,7 +26,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 
 import { NgChartsModule } from 'ng2-charts';
-import { ThumbnailComponent } from './thumbnail/thumbnail.component';
+import { OverlayCanvasComponent } from './overlay-canvas/overlay-canvas.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +35,8 @@ import { ThumbnailComponent } from './thumbnail/thumbnail.component';
     CollectionComponent,
     TrainingComponent,
     PreviewComponent,
-    ThumbnailComponent
+    ThumbnailComponent,
+    OverlayCanvasComponent
   ],
   imports: [
     BrowserModule,
@@ -39,6 +44,8 @@ import { ThumbnailComponent } from './thumbnail/thumbnail.component';
     BrowserAnimationsModule,
     FormsModule,
     FlexLayoutModule,
+    PortalModule,
+    OverlayModule,
     MatToolbarModule,
     MatIconModule,
     MatCardModule,
@@ -50,6 +57,7 @@ import { ThumbnailComponent } from './thumbnail/thumbnail.component';
     NgChartsModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [OverlayCanvasComponent]
 })
 export class AppModule { }

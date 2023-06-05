@@ -218,40 +218,34 @@ export class TrainingComponent {
     }
   }
 
-  private getClassIndex(id: number): number {
-    let index = -1;
+  public getImageInfo(args: any): void {
+    let idList = this.labeledDatas[args.index].imageInfos.map(function (o: any) { return o.id; });
+    const index = idList.indexOf(args.id);
 
-    for (let i = 0; i < this.labeledDatas.length; i++) {
-      const idList: number[] = this.labeledDatas[i].imageInfos.map(function (o: any) { return o.id; });
-      if (idList.includes(id)) {
-        index = i;
-        break;
-      }
-    }
-
-    return index;
+    const thumbnailComponent = this.thumbnailComponent.toArray()[args.index];
+    thumbnailComponent.attachCanvas(this.labeledDatas[args.index].imageInfos[index]);
   }
 
-  public changeIsTrainImage(id: number): void {
+  public changeIsTrainImage(args: any): void {
     if (this.isTraining) {
+      this.thumbnailComponent.toArray()[args.index].changeChecked(args.id);
       return;
     }
 
-    let classIndex = this.getClassIndex(id);
-    const thumbnailComponent = this.thumbnailComponent.toArray()[classIndex];
+    const thumbnailComponent = this.thumbnailComponent.toArray()[args.index];
 
     for (let labeledData of this.labeledDatas) {
       let idList = labeledData.imageInfos.map(function (o: any) { return o.id; });
-      let index = idList.indexOf(id);
+      let index = idList.indexOf(args.id);
       if (index > -1) {
         labeledData.imageInfos[index].isTrain = !labeledData.imageInfos[index].isTrain;
         if (labeledData.imageInfos[index].isTrain) {
           if (labeledData.isTrain) {
-            thumbnailComponent.drawThumbnail(labeledData.imageInfos[index].base64, id);
+            thumbnailComponent.drawThumbnail(labeledData.imageInfos[index].base64, args.id);
           }
         }
         else {
-          thumbnailComponent.changeGrayScale(id);
+          thumbnailComponent.changeGrayScale(args.id);
         }
         break;
       }
@@ -261,6 +255,9 @@ export class TrainingComponent {
   }
 
   public changeIsTrainClass(index: number): void {
+    if (this.isTraining) {
+      return;
+    }
     const thumbnailComponent = this.thumbnailComponent.toArray()[index];
 
     this.labeledDatas[index].isTrain = !this.labeledDatas[index].isTrain
@@ -277,6 +274,9 @@ export class TrainingComponent {
   }
 
   public clearIsTrainFlag(index: number): void {
+    if (this.isTraining) {
+      return;
+    }
     const thumbnailComponent = this.thumbnailComponent.toArray()[index];
 
     this.labeledDatas[index].isTrain = true;
