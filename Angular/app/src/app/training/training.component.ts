@@ -476,46 +476,67 @@ export class TrainingComponent {
     this.trainingStatus = 'preparing training data...';
     const dataset = await this.createDataset();
 
+    const that = this;
     // create training data
     tf.util.shuffleCombo(dataset.trainImages, dataset.trainLabels);
 
-    const getTrainImages = await dataset.trainImages.map(image => {
-      const data = tf.browser.fromPixels(image);
-      const cachedImage = tf.image.resizeBilinear(data, [this.inputShape[0], this.inputShape[1]], true);
-      return cachedImage.div(255).reshape(this.inputShape);
-    });
+    const getTrainImages = function* () {
+      const images = dataset.trainImages;
+      for (const image of images) {
+        yield tf.tidy(() => {
+          tf.engine().startScope();
+          const data = tf.browser.fromPixels(image);
+          const cachedImage = tf.image.resizeBilinear(data, [that.inputShape[0], that.inputShape[1]], true);
+          return cachedImage.div(255).reshape(that.inputShape);
+        });
+      }
+    };
 
-    const getTrainLabels = await dataset.trainLabels.map(label => {
-      const cachedLabel = tf.oneHot(label, this.trainClassList.length);
-      return cachedLabel;
-    });
+    const getTrainLabels = function* () {
+      const labels = dataset.trainLabels;
+      for (const label of labels) {
+        yield tf.tidy(() => {
+          return tf.oneHot(label, that.trainClassList.length);
+        });
+      }
+    };
 
     const trainImages = getTrainImages;
     const trainLabels = getTrainLabels;
 
-    const xTrain = tf.data.array(trainImages);
-    const yTrain = tf.data.array(trainLabels);
+    const xTrain = tf.data.generator(trainImages);
+    const yTrain = tf.data.generator(trainLabels);
     const train = tf.data.zip({ xs: xTrain, ys: yTrain }).shuffle(100).batch(Number(this.batchSize));
 
     // create validation data
     tf.util.shuffleCombo(dataset.valImages, dataset.valLabels);
 
-    const getValImages = await dataset.valImages.map(image => {
-      const data = tf.browser.fromPixels(image);
-      const cachedImage = tf.image.resizeBilinear(data, [this.inputShape[0], this.inputShape[1]], true);
-      return cachedImage.div(255).reshape(this.inputShape);
-    });
+    const getValImages = function* () {
+      const images = dataset.valImages;
+      for (const image of images) {
+        yield tf.tidy(() => {
+          tf.engine().startScope();
+          const data = tf.browser.fromPixels(image);
+          const cachedImage = tf.image.resizeBilinear(data, [that.inputShape[0], that.inputShape[1]], true);
+          return cachedImage.div(255).reshape(that.inputShape);
+        });
+      }
+    };
 
-    const getValLabels = await dataset.valLabels.map(label => {
-      const cachedLabel = tf.oneHot(label, this.trainClassList.length);
-      return cachedLabel;
-    });
+    const getValLabels = function* () {
+      const labels = dataset.valLabels;
+      for (const label of labels) {
+        yield tf.tidy(() => {
+          return tf.oneHot(label, that.trainClassList.length);
+        });
+      }
+    };
 
     const valImages = getValImages;
     const valLabels = getValLabels;
 
-    const xVal = tf.data.array(valImages);
-    const yVal = tf.data.array(valLabels);
+    const xVal = tf.data.generator(valImages);
+    const yVal = tf.data.generator(valLabels);
     const val = tf.data.zip({ xs: xVal, ys: yVal }).shuffle(100).batch(Number(this.batchSize));
 
     this.utilService.printMemory();
