@@ -484,7 +484,6 @@ export class TrainingComponent {
       const images = dataset.trainImages;
       for (const image of images) {
         yield tf.tidy(() => {
-          tf.engine().startScope();
           const data = tf.browser.fromPixels(image);
           const cachedImage = tf.image.resizeBilinear(data, [that.inputShape[0], that.inputShape[1]], true);
           return cachedImage.div(255).reshape(that.inputShape);
@@ -515,7 +514,6 @@ export class TrainingComponent {
       const images = dataset.valImages;
       for (const image of images) {
         yield tf.tidy(() => {
-          tf.engine().startScope();
           const data = tf.browser.fromPixels(image);
           const cachedImage = tf.image.resizeBilinear(data, [that.inputShape[0], that.inputShape[1]], true);
           return cachedImage.div(255).reshape(that.inputShape);
