@@ -2,14 +2,16 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { HeaderComponent } from './header/header.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AppComponent } from './app.component';
 
+import { HeaderComponent } from './header/header.component';
 import { CollectionComponent } from './collection/collection.component';
 import { TrainingComponent } from './training/training.component';
 import { PreviewComponent } from './preview/preview.component';
 import { ThumbnailComponent } from './thumbnail/thumbnail.component';
+import { OverlayCanvasComponent } from './overlay-canvas/overlay-canvas.component';
+import { MessageDialogComponent } from './message-dialog/message-dialog.component';
 
 import { FormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -24,9 +26,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { NgChartsModule } from 'ng2-charts';
-import { OverlayCanvasComponent } from './overlay-canvas/overlay-canvas.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +39,8 @@ import { OverlayCanvasComponent } from './overlay-canvas/overlay-canvas.componen
     TrainingComponent,
     PreviewComponent,
     ThumbnailComponent,
-    OverlayCanvasComponent
+    OverlayCanvasComponent,
+    MessageDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -54,6 +58,8 @@ import { OverlayCanvasComponent } from './overlay-canvas/overlay-canvas.componen
     MatTableModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
+    MatDialogModule,
+    MatFormFieldModule,
     NgChartsModule
   ],
   providers: [],

@@ -49,7 +49,8 @@
         [disabled]="openWebcamAreaFlg">
         <mat-icon>check</mat-icon>
       </button>
-      <button mat-button class="delete-button" color="primary" (click)="deleteClass(i)" [disabled]="openWebcamAreaFlg">
+      <button mat-button class="delete-button" color="primary" (click)="pushDeleteClass(i)"
+        [disabled]="openWebcamAreaFlg">
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -157,15 +158,18 @@
 <mat-card class="menu-area">
   <h3>collection menu</h3>
   <div class="container" fxLayout="row">
-    <button mat-button class="menu-button" color="primary" (click)="deleteImageInList()" [disabled]="openWebcamAreaFlg">
+    <button mat-button class="menu-button" color="primary" (click)="pushDeleteImageInList()"
+      [disabled]="openWebcamAreaFlg">
       <mat-icon>delete_forever</mat-icon>
       delete selected images
     </button>
-    <button mat-button class="menu-button" color="primary" (click)="deleteImageAll()" [disabled]="openWebcamAreaFlg">
+    <button mat-button class="menu-button" color="primary" (click)="pushDeleteImageAll()"
+      [disabled]="openWebcamAreaFlg">
       <mat-icon>delete_forever</mat-icon>
       delete all images
     </button>
-    <button mat-button class="menu-button" color="primary" (click)="refreshDataset()" [disabled]="openWebcamAreaFlg">
+    <button mat-button class="menu-button" color="primary" (click)="pushRefreshDataset()"
+      [disabled]="openWebcamAreaFlg">
       <mat-icon>refresh</mat-icon>
       refresh dataset
     </button>

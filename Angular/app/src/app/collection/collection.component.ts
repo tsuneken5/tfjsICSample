@@ -1,6 +1,7 @@
 import { Component, ViewChildren, QueryList } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { MatDialog } from '@angular/material/dialog';
 
 import * as constant from '../constant';
 import { UtilService } from '../util/util.service';
@@ -12,6 +13,7 @@ import { ImageInfo } from '../models/image-info';
 import { Param } from '../models/param';
 
 import { ThumbnailComponent } from '../thumbnail/thumbnail.component';
+import { MessageDialogComponent } from '../message-dialog/message-dialog.component'
 
 @Component({
   selector: 'app-collection',
@@ -87,6 +89,7 @@ export class CollectionComponent {
     private utilService: UtilService,
     private commonService: CommonService,
     private canvasService: CanvasService,
+    private dialog: MatDialog,
   ) { }
 
   public hasEmptyImage(): boolean {
@@ -180,18 +183,28 @@ export class CollectionComponent {
   }
 
   public changeDeleteFlag(args: any): void {
-    const indexList = this.deleteList.indexOf(args.id);
+    const listIndex = this.deleteList.indexOf(args.id);
 
     const thumbnailComponent = this.thumbnailComponent.toArray()[args.index];
 
-    if (indexList > -1) {
-      this.deleteList.splice(indexList, 1);
+    if (listIndex > -1) {
+      this.deleteList.splice(listIndex, 1);
       let idList = this.labeledDatas[args.index].imageInfos.map(function (o: any) { return o.id; });
       let index = idList.indexOf(args.id);
       thumbnailComponent.drawThumbnail(this.labeledDatas[args.index].imageInfos[index].base64, args.id);
     } else {
       this.deleteList.push(args.id);
       thumbnailComponent.changeGrayScale(args.id);
+    }
+  }
+
+  private selectDeleteFlag(id: number, index: number): void {
+    const listIndex = this.deleteList.indexOf(id);
+    const thumbnailComponent = this.thumbnailComponent.toArray()[index];
+
+    if (listIndex < 0) {
+      this.deleteList.push(id);
+      thumbnailComponent.changeGrayScale(id);
     }
   }
 
@@ -240,7 +253,6 @@ export class CollectionComponent {
 
     this.addImage(index, imageInfo);
   }
-
 
   public selectedFile(index: number): void {
     const inputNode: any = document.querySelector('#coll-file' + index);
@@ -353,17 +365,33 @@ export class CollectionComponent {
 
   public selectImageInClass(index: number): void {
     for (let imageInfo of this.labeledDatas[index].imageInfos) {
-      this.changeDeleteFlag({ id: imageInfo.id, index: index });
+      this.selectDeleteFlag(imageInfo.id, index);
     }
   }
 
-  public deleteImageInList(): void {
+
+  private deleteImageInList(): void {
     while (this.deleteList.length > 0) {
       this.deleteImage(this.deleteList[0]);
     }
   }
 
-  public deleteImageAll(): void {
+  public pushDeleteImageInList(): void {
+    const message = 'Delete selected image(s). Are you sure?'
+
+    const dialogRef = this.dialog.open(MessageDialogComponent, {
+      data: { text: message },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.deleteImageInList();
+      }
+    });
+
+  }
+
+  private deleteImageAll(): void {
     for (let i = 0; i < this.labeledDatas.length; i++) {
       while (this.labeledDatas[i].imageInfos.length > 0) {
         this.deleteImage(this.labeledDatas[i].imageInfos[0].id);
@@ -371,7 +399,21 @@ export class CollectionComponent {
     }
   }
 
-  public async refreshDataset(): Promise<void> {
+  public pushDeleteImageAll(): void {
+    const message = 'Delete all images. Are you sure?'
+
+    const dialogRef = this.dialog.open(MessageDialogComponent, {
+      data: { text: message },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.deleteImageAll();
+      }
+    });
+  }
+
+  private async refreshDataset(): Promise<void> {
     this.deleteImageAll();
     this.labeledDatas = [];
     for (let i = 0; i < constant.DEFAULT_LABELED_DATAS_SIZE; i++) {
@@ -384,6 +426,20 @@ export class CollectionComponent {
     }
     this.changeSummaryBarWidth();
     this.refreshLocalProject();
+  }
+
+  public pushRefreshDataset(): void {
+    const message = 'Refresh dataset. Are you sure?'
+
+    const dialogRef = this.dialog.open(MessageDialogComponent, {
+      data: { text: message },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.refreshDataset();
+      }
+    });
   }
 
   private getInputWidth(txt: string, font: string): number {
@@ -440,7 +496,7 @@ export class CollectionComponent {
     this.commonService.setReportLogs([]);
   }
 
-  public deleteClass(index: number): void {
+  private deleteClass(index: number): void {
     for (let i = 0; i < this.labeledDatas.length; i++) {
       for (let imageInfo of this.labeledDatas[i].imageInfos) {
         if (i == index) {
@@ -464,6 +520,21 @@ export class CollectionComponent {
 
     this.changeSummaryBarWidth();
     this.refreshLocalProject();
+  }
+
+  public pushDeleteClass(index: number): void {
+    const message = 'Delete selected class. Are you sure?'
+
+    const dialogRef = this.dialog.open(MessageDialogComponent, {
+      data: { text: message },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.deleteClass(index);
+      }
+    });
+
   }
 
   public async downloadDataset(): Promise<void> {

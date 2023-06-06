@@ -1,0 +1,15 @@
+<mat-card color="primary">
+  <mat-toolbar color="primary">
+    <div class="title">
+      Confirmation Dialog
+    </div>
+  </mat-toolbar>
+  <div class="dialog">
+    <p>{{ data.text }}</p>
+    <div class="button-area">
+      <!-- [mat-dialog-close]に渡した値を呼び出し元に返す -->
+      <button mat-button class="button" [mat-dialog-close]="response">OK</button>
+      <button mat-button class="button" (click)="cancel()" cdkFocusInitial>cancel</button>
+    </div>
+  </div>
+</mat-card>
