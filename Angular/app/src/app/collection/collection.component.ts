@@ -39,12 +39,9 @@ export class CollectionComponent {
   public isCutSquare: boolean = false;
 
   public recordLabel: string = 'Record'
-  public fps: string = constant.DEFAULT_FPS;
-  public delay: string = constant.DEFAULT_DELAY;
-  public duration: string = constant.DEFAULT_DURATION;
-  public fpsParams: Param[] = constant.FPS_PARAMS;
-  public delayParams: Param[] = constant.DELAY_PARAMS;
-  public durationParams: Param[] = constant.DURATION_PARAMS;
+  public fps: number = constant.DEFAULT_FPS;
+  public delay: number = constant.DEFAULT_DELAY;
+  public duration: number = constant.DEFAULT_DURATION;
 
   public displaySummary: boolean = false;
 
@@ -268,25 +265,21 @@ export class CollectionComponent {
   }
 
   public async startRecord(index: number): Promise<void> {
-    const fps = Number(this.fps);
-    const delay = Number(this.delay);
-    const duration = Number(this.duration)
-
     this.isAddingImage = true;
-    const interval = 1.0 / fps;
+    const interval = 1.0 / this.fps;
 
     this.recordLabel = 'Recording in ' + this.delay + ' sec';
-    for (let i = 0; i < delay; i++) {
+    for (let i = 0; i < this.delay; i++) {
       await this.utilService.sleep(1000);
-      this.recordLabel = 'Recording in ' + (delay - (i + 1)) + ' sec';
+      this.recordLabel = 'Recording in ' + (this.delay - (i + 1)) + ' sec';
     }
 
     this.recordLabel = 'Recording 0 sec'
-    for (let i = 0; i < (duration * fps); i++) {
+    for (let i = 0; i < (this.duration * this.fps); i++) {
       const imageInfo = this.canvasService.getImageFromVideoElement(this.webcamElement, this.isCutSquare);
       this.addImage(index, imageInfo);
-      if ((i + 1) % fps == 0) {
-        this.recordLabel = 'Recording ' + ((i + 1) / fps) + ' sec'
+      if ((i + 1) % this.fps == 0) {
+        this.recordLabel = 'Recording ' + ((i + 1) / this.fps) + ' sec'
       }
       await this.utilService.sleep(interval * 1000);
     }

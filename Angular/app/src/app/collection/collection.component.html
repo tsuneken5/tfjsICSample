@@ -35,8 +35,9 @@
 <mat-card class="upload-menu">
   <h3>collection option</h3>
   <div class="container params" fxLayout="row">
-    <input type="checkbox" class="param-box" [(ngModel)]="isCutSquare" [disabled]="isAddingImage">
-    <span class="param-label">Crop image to square</span>
+    <mat-slide-toggle color="primary" [(ngModel)]="isCutSquare" [disabled]="isAddingImage">
+      <span class="param-label">Crop image to square</span>
+    </mat-slide-toggle>
   </div>
 </mat-card>
 
@@ -97,50 +98,54 @@
 
   <!-- webcam area -->
   <div id="coll-webcam-area{{i}}" class="coll-webcam-area" style="display: none;">
-    <div class="containar" fxLayout="row">
-      <button mat-button class="delete-button delete-area" color="primary" (click)="closeWebcamArea(i)"
-        [disabled]="isAddingImage">
-        <mat-icon>compare_arrows</mat-icon>
-      </button>
-      <div class="container" fxLayout="column">
-        <video id="coll-webcam{{i}}" class="webcam" playsInline muted></video>
-        <button mat-button class="menu-button" color="primary" (click)="startRecord(i)" [disabled]="isAddingImage">
-          {{ recordLabel }}
+    <form #webCamForm="ngForm">
+      <div class="containar" fxLayout="row">
+        <button mat-button class="delete-button delete-area" color="primary" (click)="closeWebcamArea(i)"
+          [disabled]="isAddingImage">
+          <mat-icon>compare_arrows</mat-icon>
         </button>
+        <div class="container" fxLayout="column">
+          <video id="coll-webcam{{i}}" class="webcam" playsInline muted></video>
+          <button mat-button class="menu-button" color="primary" (click)="startRecord(i)"
+            [disabled]="isAddingImage || webCamForm.invalid">
+            {{ recordLabel }}
+          </button>
+        </div>
+        <div class="container" fxLayout="column">
+
+          <!-- fps -->
+          <span class="param-title">FPS</span>
+          <div class="params containar" fxLayout="column">
+            <div class="form-input-area">
+              <input type="number" class="form-num" name="fps{{i}}" required min="1" max="60" step="1" #fpsVal="ngModel"
+                [(ngModel)]="fps" [disabled]="isAddingImage" appIntegerOnly>
+            </div>
+            <div *ngIf="fpsVal.invalid" class="warn">Please enter a number between 1 and 60.</div>
+          </div>
+
+          <!-- delay -->
+          <span class="param-title">Delay</span>
+          <div class="params containar" fxLayout="column">
+            <div class="form-input-area">
+              <input type="number" class="form-num" name="delay{{i}}" required min="1" max="5" step="1"
+                #delayVal="ngModel" [(ngModel)]="delay" [disabled]="isAddingImage" appIntegerOnly>
+            </div>
+            <div *ngIf="delayVal.invalid" class="warn">Please enter a number between 1 and 5.</div>
+          </div>
+
+          <!-- duration -->
+          <span class="param-title">Duration</span>
+          <div class="params containar" fxLayout="column">
+            <div class="form-input-area">
+              <input type="number" class="form-num" name="duration{{i}}" required min="1" max="5" step="1"
+                #durationVal="ngModel" [(ngModel)]="duration" [disabled]="isAddingImage" appIntegerOnly>
+            </div>
+            <div *ngIf="durationVal.invalid" class="warn">Please enter a number between 1 and 5.</div>
+          </div>
+
+        </div>
       </div>
-      <div class="container" fxLayout="column">
-        <!-- fps -->
-        <span class="param-title">FPS</span>
-        <div class="container params" fxLayout="row">
-          <div *ngFor="let fpsParam of fpsParams">
-            <input type="radio" name="fps{{i}}" class="param-radio" value="{{ fpsParam.value }}" [(ngModel)]="fps"
-              [disabled]="isAddingImage">
-            <span class="param-label">{{ fpsParam.label}}</span>
-          </div>
-        </div>
-
-        <!-- delay -->
-        <span class="param-title">Delay</span>
-        <div class="container params" fxLayout="row">
-          <div *ngFor="let delayParam of delayParams">
-            <input type="radio" name="delay{{i}}" class="param-radio" value="{{ delayParam.value }}" [(ngModel)]="delay"
-              [disabled]="isAddingImage">
-            <span class="param-label">{{ delayParam.label}}</span>
-          </div>
-        </div>
-
-        <!-- duration -->
-        <span class="param-title">Duration</span>
-        <div class="container params" fxLayout="row">
-          <div *ngFor="let durationParam of durationParams">
-            <input type="radio" name="duration{{i}}" class="param-radio" value="{{ durationParam.value }}"
-              [(ngModel)]="duration" [disabled]="isAddingImage">
-            <span class="param-label">{{ durationParam.label}}</span>
-          </div>
-        </div>
-
-      </div>
-    </div>
+    </form>
   </div>
 
   <!-- thumbnail area -->

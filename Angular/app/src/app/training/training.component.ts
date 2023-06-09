@@ -32,16 +32,13 @@ export class TrainingComponent {
   private trainClassList: number[] = [];
   public trainedClassList: number[] = [];
 
-  public baseModel: string = constant.DEFAULT_BASE_MODEL;
-  public epochs: string = constant.DEFAULT_EPOCHS;
-  public batchSize: string = constant.DEFAULT_BACTH_SIZE;
-  public learningRate: string = constant.DEFAULT_LEARNING_RATE;
-  public validationSplit: string = constant.DEFAULT_VALIDATION_SPLIT;
+  // training parameter
   public baseModelParams: Param[] = constant.BASE_MODEL_PARAMS;
-  public epochsParams: Param[] = constant.EPOCHS_PARAMS;
-  public batchSizeParams: Param[] = constant.BACTH_SIZE_PARAMS;
-  public learningRateParams: Param[] = constant.LEARNING_RATE_PARAMS;
-  public validationSplitParams: Param[] = constant.VALIDATION_SPLIT_PARAMS;
+  public baseModel: string = constant.DEFAULT_BASE_MODEL;
+  public epochs: number = constant.DEFAULT_EPOCHS;
+  public batchSize: number = constant.DEFAULT_BACTH_SIZE;
+  public learningRate: number = constant.DEFAULT_LEARNING_RATE;
+  public validationSplit: number = constant.DEFAULT_VALIDATION_SPLIT;
 
   private model: any = null;
   private history: any = null;
@@ -331,7 +328,7 @@ export class TrainingComponent {
     this.model.add(featureModel);
     this.model.add(transferModel);
 
-    let optimizer = tf.train.adam(Number(this.learningRate));
+    let optimizer = tf.train.adam(this.learningRate);
     let loss = (this.trainClassList.length == 2) ? 'binaryCrossentropy' : 'categoricalCrossentropy';
 
     this.model.compile({
@@ -369,7 +366,7 @@ export class TrainingComponent {
 
     for (let index of this.trainClassList) {
       const trainNum = this.labeledDatas[index].isTrainNum();
-      const splitNum = Math.round(trainNum * Number(this.validationSplit));
+      const splitNum = Math.round(trainNum * this.validationSplit);
       let count = 0;
       const imageInfos = this.arrayShuffle(this.labeledDatas[index].imageInfos.slice())
       for (let imageInfo of imageInfos) {
@@ -505,7 +502,7 @@ export class TrainingComponent {
 
     const xTrain = tf.data.generator(trainImages);
     const yTrain = tf.data.generator(trainLabels);
-    const train = tf.data.zip({ xs: xTrain, ys: yTrain }).shuffle(100).batch(Number(this.batchSize));
+    const train = tf.data.zip({ xs: xTrain, ys: yTrain }).shuffle(100).batch(this.batchSize);
 
     // create validation data
     tf.util.shuffleCombo(dataset.valImages, dataset.valLabels);
@@ -535,7 +532,7 @@ export class TrainingComponent {
 
     const xVal = tf.data.generator(valImages);
     const yVal = tf.data.generator(valLabels);
-    const val = tf.data.zip({ xs: xVal, ys: yVal }).shuffle(100).batch(Number(this.batchSize));
+    const val = tf.data.zip({ xs: xVal, ys: yVal }).shuffle(100).batch(this.batchSize);
 
     this.utilService.printMemory();
     this.trainingStatus = 'training... 0 / ' + this.epochs;
@@ -546,7 +543,7 @@ export class TrainingComponent {
 
     const history = await this.model.fitDataset(train, {
       validationData: val,
-      epochs: Number(this.epochs),
+      epochs: this.epochs,
       callbacks: {
         onBatchEnd: () => {
           if (this.isCancelTraining) {
@@ -626,16 +623,29 @@ export class TrainingComponent {
     }
   }
 
+  private getTrainingParameter(): void {
+    this.baseModel = this.commonService.getBaseModel();
+    this.epochs = this.commonService.getEpochs();
+    this.batchSize = this.commonService.getBatchSize();
+    this.learningRate = this.commonService.getLearningRate();
+    this.validationSplit = this.commonService.getValidationSplit();
+  }
+
+  private setTrainingParameter(): void {
+    this.commonService.setBaseModel(this.baseModel);
+    this.commonService.setEpochs(this.epochs);
+    this.commonService.setBatchSize(this.batchSize);
+    this.commonService.setLearningRate(this.learningRate);
+    this.commonService.setValidationSplit(this.validationSplit);
+  }
+
   ngOnInit(): void {
     this.labeledDatas = this.commonService.getLabeledDatas();
     this.history = this.commonService.getHistory();
     this.reportLogs = this.commonService.getReportLogs();
     this.trainedClassList = this.commonService.getTrainedIndexClass();
 
-    this.baseModel = this.commonService.getBaseModel();
-    this.epochs = this.commonService.getEpochs();
-    this.batchSize = this.commonService.getBatchSize();
-    this.learningRate = this.commonService.getLearningRate();
+    this.getTrainingParameter();
   }
 
   ngAfterViewInit(): void {
@@ -653,11 +663,7 @@ export class TrainingComponent {
 
   ngOnDestroy(): void {
     this.commonService.setLabeledDatas(this.labeledDatas);
-
-    this.commonService.setBaseModel(this.baseModel);
-    this.commonService.setEpochs(this.epochs);
-    this.commonService.setBatchSize(this.batchSize);
-    this.commonService.setLearningRate(this.learningRate);
+    this.setTrainingParameter();
 
     console.clear();
   }

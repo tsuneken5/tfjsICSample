@@ -19,13 +19,14 @@ $ docker-compose up -d
 open your browser on http://localhost:4200/
 
 # Wish List
-- fitDatasetの実装
 - IndexedDBへのプロジェクトの保存
 - 画像のデータオーギュメンテーション
+- データセットの追加
 - Reactへの転記
 
 # Author
 [Twitter](https://twitter.com/tsuneken5)
+[brog](https://engineer.tsuneken5.com/)
 
 # LICENSE
 TensorFlow.js Image Classification Sample is under [MIT license](https://en.wikipedia.org/wiki/MIT_License).

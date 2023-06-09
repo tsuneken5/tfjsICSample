@@ -28,8 +28,10 @@ import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 
 import { NgChartsModule } from 'ng2-charts';
+import { IntegerOnlyDirective } from './directive/integer-only.directive';
 
 @NgModule({
   declarations: [
@@ -40,7 +42,8 @@ import { NgChartsModule } from 'ng2-charts';
     PreviewComponent,
     ThumbnailComponent,
     OverlayCanvasComponent,
-    MessageDialogComponent
+    MessageDialogComponent,
+    IntegerOnlyDirective,
   ],
   imports: [
     BrowserModule,
@@ -60,6 +63,7 @@ import { NgChartsModule } from 'ng2-charts';
     MatProgressSpinnerModule,
     MatDialogModule,
     MatFormFieldModule,
+    MatSlideToggleModule,
     NgChartsModule
   ],
   providers: [],

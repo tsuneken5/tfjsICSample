@@ -26,47 +26,21 @@ export const MIN_CAN_TRAIN_CLASS_NUM: number = 2;
 export const SUMMARY_BAR_WIDTH: number = 75;
 export const DETECT_BAR_HEIGHT: number = 50;
 
-export const FPS_PARAMS: Param[] = [
-  new Param('1'), new Param('2'), new Param('3'), new Param('4'), new Param('5')
-];
-export const DEFAULT_FPS: string = FPS_PARAMS[4].value
+// collection webcam parameter
+export const DEFAULT_FPS: number = 5;
+export const DEFAULT_DELAY: number = 2;
+export const DEFAULT_DURATION: number = 5;
 
-export const DELAY_PARAMS: Param[] = [
-  new Param('1'), new Param('2'), new Param('3')
-];
-export const DEFAULT_DELAY: string = DELAY_PARAMS[1].value
-
-export const DURATION_PARAMS: Param[] = [
-  new Param('1'), new Param('2'), new Param('3'), new Param('4'), new Param('5')
-];
-export const DEFAULT_DURATION = DURATION_PARAMS[4].value;
-
-
+// training parameter
 export const BASE_MODEL_PARAMS: Param[] = [
   new Param('MobileNet v1', 'mobilenet_v1',),
   new Param('MobileNet v2', 'mobilenet_v2',),
 ];
 export const DEFAULT_BASE_MODEL: string = BASE_MODEL_PARAMS[0].value
-
-export const EPOCHS_PARAMS: Param[] = [
-  new Param('10'), new Param('20'), new Param('30'), new Param('50'), new Param('100')
-];
-export const DEFAULT_EPOCHS: string = EPOCHS_PARAMS[3].value;
-
-export const BACTH_SIZE_PARAMS: Param[] = [
-  new Param('1'), new Param('2'), new Param('4'), new Param('8'), new Param('16')
-];
-export const DEFAULT_BACTH_SIZE: string = BACTH_SIZE_PARAMS[1].value;
-
-export const LEARNING_RATE_PARAMS: Param[] = [
-  new Param('0.01'), new Param('0.001'), new Param('0.0001'), new Param('0.00001')
-];
-export const DEFAULT_LEARNING_RATE: string = LEARNING_RATE_PARAMS[1].value;
-
-export const VALIDATION_SPLIT_PARAMS: Param[] = [
-  new Param('0.10'), new Param('0.15'), new Param('0.20'), new Param('0.25'), new Param('0.30')
-];
-export const DEFAULT_VALIDATION_SPLIT = VALIDATION_SPLIT_PARAMS[2].value;
+export const DEFAULT_EPOCHS: number = 50;
+export const DEFAULT_BACTH_SIZE: number = 2;
+export const DEFAULT_LEARNING_RATE: number = 0.001;
+export const DEFAULT_VALIDATION_SPLIT: number = 0.2;
 
 export const DETECT_MENUS: Param[] = [
   new Param('File'), new Param('Webcam')

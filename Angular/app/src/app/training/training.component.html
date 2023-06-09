@@ -73,73 +73,77 @@
 
 <!-- train menu -->
 <mat-card class="train-menu-area">
-  <h3>training menu</h3>
+  <form #trainingForm="ngForm">
+    <h3>training menu</h3>
+    <div class="container" fxLayout="row">
 
-  <div class="container" fxLayout="column">
-    <!-- base model -->
-    <span class="param-title">Base Model</span>
-    <div class="container params" fxLayout="row">
-      <div *ngFor="let baseModelParam of baseModelParams">
-        <input type="radio" name="baseModel" class="param-radio" value="{{ baseModelParam.value }}"
-          [(ngModel)]="baseModel" [disabled]="isTraining">
-        <span class="param-label">{{ baseModelParam.label}}</span>
+      <div class="container" fxLayout="column">
+        <!-- base model -->
+        <span class="param-title">Base Model</span>
+        <div class="container params" fxLayout="row">
+          <div *ngFor="let baseModelParam of baseModelParams">
+            <input type="radio" name="baseModel" class="param-radio" value="{{ baseModelParam.value }}"
+              [(ngModel)]="baseModel" [disabled]="isTraining">
+            <span class="param-label">{{ baseModelParam.label}}</span>
+          </div>
+        </div>
+
+        <!-- epochs-->
+        <span class="param-title">Epochs</span>
+        <div class="params containar" fxLayout="column">
+          <div class="input-area">
+            <input type="number" class="form-num" name="epochs-num" required min="1" #epochsVal="ngModel"
+              [(ngModel)]="epochs" [disabled]="isTraining" appIntegerOnly>
+          </div>
+          <div *ngIf="epochsVal.invalid" class="warn">Please enter a number greater than or equal to 1.</div>
+        </div>
+
+        <!-- batch size-->
+        <span class="param-title">Batch Size</span>
+        <div class="params containar" fxLayout="column">
+          <div class="input-area">
+            <input type="number" class="form-num" name="batch-size-num" required min="1" step="2"
+              #batchSizeVal="ngModel" [(ngModel)]="batchSize" [disabled]="isTraining" appIntegerOnly>
+          </div>
+          <div *ngIf="batchSizeVal.invalid" class="warn">Please enter a number greater than or equal to 1.</div>
+        </div>
+
+        <!-- learning rate -->
+        <span class="param-title">Learning Rate</span>
+        <div class="params containar" fxLayout="column">
+          <div class="input-area">
+            <input type="number" class="form-num" name="learning-rate-num" required min="0.00001" max="1" step="0.00001"
+              #learningRateVal="ngModel" [(ngModel)]="learningRate" [disabled]="isTraining">
+          </div>
+          <div *ngIf="learningRateVal.invalid" class="warn">Please enter a number between 0.00001 and 1.</div>
+        </div>
+
+        <!-- validation split -->
+        <span class="param-title">Validation Split</span>
+        <div class="params containar" fxLayout="column">
+          <div class="input-area">
+            <input type="number" class="form-num" name="validation-split-num" required min="0.05" max="0.5" step="0.05"
+              #validationSplitVal="ngModel" [(ngModel)]="validationSplit" [disabled]="isTraining">
+          </div>
+          <div *ngIf="validationSplitVal.invalid" class="warn">Please enter a number between 0.05 and 0.5.</div>
+        </div>
+
       </div>
     </div>
+    <mat-card-actions>
+      <button mat-button color="primary" class="training-button"
+        [disabled]="!canTrain() || isTraining || trainingForm.invalid" (click)="startTraining()">
+        <mat-icon>trending_up</mat-icon>
+        start training
+      </button>
+      <button mat-button color="primary" class="training-button" [disabled]="!isTraining || isCancelTraining"
+        (click)="onCancelTraining()">
+        <mat-icon>close</mat-icon>
+        cancel training
+      </button>
 
-    <!-- epochs-->
-    <span class="param-title">Epochs</span>
-    <div class="container params" fxLayout="row">
-      <div *ngFor="let epochsParam of epochsParams">
-        <input type="radio" name="epochs" class="param-radio" value="{{ epochsParam.value }}" [(ngModel)]="epochs"
-          [disabled]="isTraining">
-        <span class="param-label">{{ epochsParam.label}}</span>
-      </div>
-    </div>
-
-    <!-- batch size-->
-    <span class="param-title">Batch Size</span>
-    <div class="container params" fxLayout="row">
-      <div *ngFor="let batchSizeParam of batchSizeParams">
-        <input type="radio" name="batchSize" class="param-radio" value="{{ batchSizeParam.value }}"
-          [(ngModel)]="batchSize" [disabled]="isTraining">
-        <span class="param-label">{{ batchSizeParam.label}}</span>
-      </div>
-    </div>
-
-    <!-- learning rate -->
-    <span class="param-title">Learning Rate</span>
-    <div class="container params" fxLayout="row">
-      <div *ngFor="let learningRateParam of learningRateParams">
-        <input type="radio" name="learningRate" class="param-radio" value="{{ learningRateParam.value }}"
-          [(ngModel)]="learningRate" [disabled]="isTraining">
-        <span class="param-label">{{ learningRateParam.label}}</span>
-      </div>
-    </div>
-
-    <!-- validation split -->
-    <span class="param-title">Validation Split</span>
-    <div class="container params" fxLayout="row">
-      <div *ngFor="let validationSplitParam of validationSplitParams">
-        <input type="radio" name="validationSplit" class="param-radio" value="{{ validationSplitParam.value }}"
-          [(ngModel)]="validationSplit" [disabled]="isTraining">
-        <span class="param-label">{{ validationSplitParam.label}}</span>
-      </div>
-    </div>
-
-  </div>
-  <mat-card-actions>
-    <button mat-button color="primary" class="training-button" [disabled]="!canTrain() || isTraining"
-      (click)="startTraining()">
-      <mat-icon>trending_up</mat-icon>
-      start training
-    </button>
-    <button mat-button color="primary" class="training-button" [disabled]="!isTraining || isCancelTraining"
-      (click)="onCancelTraining()">
-      <mat-icon>close</mat-icon>
-      cancel training
-    </button>
-
-  </mat-card-actions>
+    </mat-card-actions>
+  </form>
 </mat-card>
 
 <!-- training status -->

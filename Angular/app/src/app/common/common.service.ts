@@ -12,10 +12,10 @@ export class CommonService {
   private labeledDatas: LabeledData[] = [];
 
   private baseModel: string = constant.DEFAULT_BASE_MODEL;
-  private epochs: string = constant.DEFAULT_EPOCHS;
-  private batchSize: string = constant.DEFAULT_BACTH_SIZE;
-  private learningRate: string = constant.DEFAULT_LEARNING_RATE;
-  private validationSplit: string = constant.DEFAULT_VALIDATION_SPLIT;
+  private epochs: number = constant.DEFAULT_EPOCHS;
+  private batchSize: number = constant.DEFAULT_BACTH_SIZE;
+  private learningRate: number = constant.DEFAULT_LEARNING_RATE;
+  private validationSplit: number = constant.DEFAULT_VALIDATION_SPLIT;
 
   private trainedClassIndex: number[] = [];
   private reportLogs: ReportLog[] = [];
@@ -46,35 +46,35 @@ export class CommonService {
     this.baseModel = baseModel;
   }
 
-  public getEpochs(): string {
+  public getEpochs(): number {
     return this.epochs;
   }
 
-  public setEpochs(epochs: string) {
+  public setEpochs(epochs: number) {
     this.epochs = epochs;
   }
 
-  public getBatchSize(): string {
+  public getBatchSize(): number {
     return this.batchSize;
   }
 
-  public setBatchSize(batchSize: string) {
+  public setBatchSize(batchSize: number) {
     this.batchSize = batchSize;
   }
 
-  public getLearningRate(): string {
+  public getLearningRate(): number {
     return this.learningRate;
   }
 
-  public setLearningRate(learningRate: string) {
+  public setLearningRate(learningRate: number) {
     this.learningRate = learningRate;
   }
 
-  public getValidationSplit(): string {
+  public getValidationSplit(): number {
     return this.validationSplit;
   }
 
-  public setValidationSplit(validationSplit: string) {
+  public setValidationSplit(validationSplit: number) {
     this.validationSplit = validationSplit;
   }
 

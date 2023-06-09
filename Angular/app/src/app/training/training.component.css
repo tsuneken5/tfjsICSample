@@ -67,6 +67,19 @@ h3 {
   margin-left: 20px;
 }
 
+.input-area {
+  border: 2px solid silver;
+  border-radius: 30px;
+  padding: 0 10px;
+  width: 100px;
+}
+
+.form-num {
+  margin: 5px;
+  border: none;
+  width: 90%;
+}
+
 .param-radio {
   margin-left: 5px;
 }
