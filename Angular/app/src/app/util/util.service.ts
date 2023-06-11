@@ -76,4 +76,12 @@ export class UtilService {
   public async sleep(msec: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, msec));
   }
+
+  public randomBoolean(trueRate: number): boolean {
+    return (Math.random() < trueRate);
+  }
+
+  public randomInt(min: number, max: number): number {
+    return Math.floor(Math.random() * (max + 1 - min)) + min;
+  }
 }

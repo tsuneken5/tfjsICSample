@@ -275,7 +275,7 @@ export class PreviewComponent {
   }
 
   ngOnDestroy(): void {
-    if (this.webcamElement != null) {
+    if (this.webcamElement) {
       this.pauseWebcam();
       this.webcam = null;
 
@@ -286,6 +286,9 @@ export class PreviewComponent {
       this.webcamElement.srcObject = null;
       this.webcamElement.load();
       this.webcamElement = null;
+    }
+    if (this.model) {
+      tf.dispose(this.model);
     }
     console.clear();
   }

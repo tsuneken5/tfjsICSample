@@ -73,62 +73,241 @@
 
 <!-- train menu -->
 <mat-card class="train-menu-area">
+  <h3>training menu</h3>
   <form #trainingForm="ngForm">
-    <h3>training menu</h3>
-    <div class="container" fxLayout="row">
-
-      <div class="container" fxLayout="column">
-        <!-- base model -->
-        <span class="param-title">Base Model</span>
-        <div class="container params" fxLayout="row">
-          <div *ngFor="let baseModelParam of baseModelParams">
-            <input type="radio" name="baseModel" class="param-radio" value="{{ baseModelParam.value }}"
-              [(ngModel)]="baseModel" [disabled]="isTraining">
-            <span class="param-label">{{ baseModelParam.label}}</span>
+    <div class="container " fxLayout="row">
+      <div class="container train-param-area" fxLayout="column">
+        <div class="param-type">training parameter</div>
+        <div class="container" fxLayout="column">
+          <!-- base model -->
+          <span class="param-title">Base Model</span>
+          <div class="container params" fxLayout="row">
+            <div *ngFor="let baseModelParam of baseModelParams">
+              <input type="radio" name="baseModel" class="param-radio" value="{{ baseModelParam.value }}"
+                [(ngModel)]="baseModel" [disabled]="isTraining">
+              <span class="param-label">{{ baseModelParam.label}}</span>
+            </div>
           </div>
-        </div>
 
-        <!-- epochs-->
-        <span class="param-title">Epochs</span>
-        <div class="params containar" fxLayout="column">
-          <div class="input-area">
-            <input type="number" class="form-num" name="epochs-num" required min="1" #epochsVal="ngModel"
-              [(ngModel)]="epochs" [disabled]="isTraining" appIntegerOnly>
+          <!-- epochs-->
+          <span class="param-title">Epochs</span>
+          <div class="params containar" fxLayout="column">
+            <div class="input-area">
+              <input type="number" class="form-num" name="epochs-num" required min="1" #epochsVal="ngModel"
+                [(ngModel)]="epochs" [disabled]="isTraining" appIntegerOnly>
+            </div>
+            <div *ngIf="epochsVal.invalid" class="warn">Please enter a number greater than or equal to 1.</div>
           </div>
-          <div *ngIf="epochsVal.invalid" class="warn">Please enter a number greater than or equal to 1.</div>
-        </div>
 
-        <!-- batch size-->
-        <span class="param-title">Batch Size</span>
-        <div class="params containar" fxLayout="column">
-          <div class="input-area">
-            <input type="number" class="form-num" name="batch-size-num" required min="1" step="2"
-              #batchSizeVal="ngModel" [(ngModel)]="batchSize" [disabled]="isTraining" appIntegerOnly>
+          <!-- batch size-->
+          <span class="param-title">Batch Size</span>
+          <div class="params containar" fxLayout="column">
+            <div class="input-area">
+              <input type="number" class="form-num" name="batch-size-num" required min="1" step="2"
+                #batchSizeVal="ngModel" [(ngModel)]="batchSize" [disabled]="isTraining" appIntegerOnly>
+            </div>
+            <div *ngIf="batchSizeVal.invalid" class="warn">Please enter a number greater than or equal to 1.</div>
           </div>
-          <div *ngIf="batchSizeVal.invalid" class="warn">Please enter a number greater than or equal to 1.</div>
-        </div>
 
-        <!-- learning rate -->
-        <span class="param-title">Learning Rate</span>
-        <div class="params containar" fxLayout="column">
-          <div class="input-area">
-            <input type="number" class="form-num" name="learning-rate-num" required min="0.00001" max="1" step="0.00001"
-              #learningRateVal="ngModel" [(ngModel)]="learningRate" [disabled]="isTraining">
+          <!-- learning rate -->
+          <span class="param-title">Learning Rate</span>
+          <div class="params containar" fxLayout="column">
+            <div class="input-area">
+              <input type="number" class="form-num" name="learning-rate-num" required min="0.00001" max="1"
+                step="0.00001" #learningRateVal="ngModel" [(ngModel)]="learningRate" [disabled]="isTraining">
+            </div>
+            <div *ngIf="learningRateVal.invalid" class="warn">Please enter a number between 0.00001 and 1.</div>
           </div>
-          <div *ngIf="learningRateVal.invalid" class="warn">Please enter a number between 0.00001 and 1.</div>
-        </div>
 
-        <!-- validation split -->
-        <span class="param-title">Validation Split</span>
-        <div class="params containar" fxLayout="column">
-          <div class="input-area">
-            <input type="number" class="form-num" name="validation-split-num" required min="0.05" max="0.5" step="0.05"
-              #validationSplitVal="ngModel" [(ngModel)]="validationSplit" [disabled]="isTraining">
+          <!-- validation split -->
+          <span class="param-title">Validation Split</span>
+          <div class="params containar" fxLayout="column">
+            <div class="input-area">
+              <input type="number" class="form-num" name="validation-split-num" required min="0.05" max="0.5"
+                step="0.05" #validationSplitVal="ngModel" [(ngModel)]="validationSplit" [disabled]="isTraining">
+            </div>
+            <div *ngIf="validationSplitVal.invalid" class="warn">Please enter a number between 0.05 and 0.5.</div>
           </div>
-          <div *ngIf="validationSplitVal.invalid" class="warn">Please enter a number between 0.05 and 0.5.</div>
-        </div>
 
+        </div>
       </div>
+      <div class="container train-param-area" fxLayout="column">
+        <div class="param-type">data augment parameter</div>
+        <!-- augment rate -->
+        <mat-slide-toggle class="train-param-slide" name="augment-rate-flag" color="primary"
+          [(ngModel)]="augmentRateFlag">
+          <span class="param-title">Augment Rate</span>
+        </mat-slide-toggle>
+        <div class="input-area">
+          <input class="form-num" name="augment-rate" type="number" required min="0" max="1" step="0.1"
+            #augmentRateVal="ngModel" [(ngModel)]="augmentRate" [disabled]="!augmentRateFlag">
+        </div>
+        <div *ngIf="augmentRateVal.invalid" class="warn">Please enter a number between 0 and 1.</div>
+        <div class="container" fxLayout="row">
+          <div class="container train-column-area" fxLayout="column">
+
+            <!-- cut out range -->
+            <mat-slide-toggle class="train-param-slide" name="cut-out-flag" color="primary" [(ngModel)]="cutOutFlag"
+              [disabled]="!augmentRateFlag">
+              <span class="param-title">Cut Out Range</span>
+            </mat-slide-toggle>
+            <div class="input-area">
+              <input class="form-num" name="cut-out-range" type="number" required min="0" max="1" step="0.1"
+                #cutOutRangeVal="ngModel" [(ngModel)]="cutOutRange" [disabled]="!cutOutFlag || !augmentRateFlag">
+            </div>
+            <div *ngIf="cutOutRangeVal.invalid" class="warn">Please enter a number between 0 and 1.</div>
+
+            <!-- random crop range -->
+            <mat-slide-toggle class="train-param-slide" name="random-crop-range-flag" color="primary"
+              [(ngModel)]="cropFlag" [disabled]="!augmentRateFlag">
+              <span class="param-title">Random Crop Range</span>
+            </mat-slide-toggle>
+            <div class="input-area">
+              <input class="form-num" name="random-crop-range" type="number" required min="0" max="1" step="0.1"
+                #cropVal="ngModel" [(ngModel)]="cropRange" [disabled]="!cropFlag || !augmentRateFlag">
+            </div>
+            <div *ngIf="cropVal.invalid" class="warn">Please enter a number between 0 and 1.</div>
+
+            <!-- shear range -->
+            <mat-slide-toggle class="train-param-slide" name="shear-range-flag" [(ngModel)]="shearFlag" color="primary"
+              [disabled]="!augmentRateFlag">
+              <span class="param-title">Shear Range</span>
+            </mat-slide-toggle>
+            <div class="input-area">
+              <input class="form-num" name="shear-range" type="number" required min="0" max="1" step="0.1"
+                #shearRangeVal="ngModel" [(ngModel)]="shearRange" [disabled]="!shearFlag || !augmentRateFlag">
+            </div>
+            <div *ngIf="shearRangeVal.invalid" class="warn">Please enter a number between 0 and 1.</div>
+
+            <!-- rotation range -->
+            <mat-slide-toggle class="train-param-slide" name="rotation-range-flag" color="primary"
+              [(ngModel)]="rotationFlag" [disabled]="!augmentRateFlag">
+              <span class="param-title">Rotation Range</span>
+            </mat-slide-toggle>
+            <div class="input-area">
+              <input class="form-num" name="rotation-range" type="number" required min="0" max="180" step="5"
+                #rotationRangeVal="ngModel" [(ngModel)]="rotationRange" [disabled]="!rotationFlag || !augmentRateFlag">
+            </div>
+            <div *ngIf="rotationRangeVal.invalid" class="warn">Please enter a number between 0 and 180.</div>
+
+            <!-- width shift range -->
+            <mat-slide-toggle class="train-param-slide" name="width-shift-range-flag" color="primary"
+              [(ngModel)]="widthShiftFlag" [disabled]="!augmentRateFlag">
+              <span class="param-title">Width Shift Range</span>
+            </mat-slide-toggle>
+            <div class="input-area">
+              <input class="form-num" name="width-shift-range" type="number" required min="0" max="1" step="0.1"
+                #widthShiftRangeVal="ngModel" [(ngModel)]="widthShiftRange"
+                [disabled]="!widthShiftFlag || !augmentRateFlag">
+            </div>
+            <div *ngIf="widthShiftRangeVal.invalid" class="warn">Please enter a number between 0 and 1.</div>
+
+            <!-- height shift range -->
+            <mat-slide-toggle class="train-param-slide" name="height-shift-range-flag" color="primary"
+              [(ngModel)]="heightShiftFlag" [disabled]="!augmentRateFlag">
+              <span class="param-title">Height Shift Range</span>
+            </mat-slide-toggle>
+            <div class="input-area">
+              <input class="form-num" name="height-shift-range" type="number" required min="0" max="1" step="0.1"
+                #heightShiftRangeVal="ngModel" [(ngModel)]="heightShiftRange"
+                [disabled]="!heightShiftFlag || !augmentRateFlag">
+            </div>
+            <div *ngIf="heightShiftRangeVal.invalid" class="warn">Please enter a number between 0 and 1.</div>
+
+            <!-- horizontal flip -->
+            <mat-slide-toggle class="train-param-slide" name="horizontal-flip-flag" color="primary"
+              [(ngModel)]="horizontalFlipFlag" [disabled]="!augmentRateFlag">
+              <span class="param-title">Horizontal Flip</span>
+            </mat-slide-toggle>
+
+            <!-- vertical flip -->
+            <mat-slide-toggle class="train-param-slide" name="vertical-flip-flag" color="primary"
+              [(ngModel)]="verticalFlipFlag" [disabled]="!augmentRateFlag">
+              <span class="param-title">Vertical Flip</span>
+            </mat-slide-toggle>
+
+          </div>
+
+          <div class="container train-column-area" fxLayout="column">
+            <!-- noise injection -->
+            <mat-slide-toggle class="train-param-slide" name="noise-injection-flag" color="primary"
+              [(ngModel)]="noiseInjectionFlag" [disabled]="!augmentRateFlag">
+              <span class="param-title">Noise Injection</span>
+            </mat-slide-toggle>
+            <div class="input-area">
+              <input class="form-num" name="noise-injection" type="number" required min="0" max="1" step="0.1"
+                #noiseInjectionVal="ngModel" [(ngModel)]="noiseInjection"
+                [disabled]="!noiseInjectionFlag || !augmentRateFlag">
+            </div>
+            <div *ngIf="noiseInjectionVal.invalid" class="warn">Please enter a number between 0 and 1.</div>
+
+            <!-- blur filter -->
+            <mat-slide-toggle class="train-param-slide" name="blur-filter-flag" color="primary"
+              [(ngModel)]="blurFilterFlag" [disabled]="!augmentRateFlag">
+              <span class="param-title">Blur Filter</span>
+            </mat-slide-toggle>
+            <div class="input-area">
+              <input class="form-num" name="blur-filter" type="number" required min="0" max="1" step="0.1"
+                #blurFilterVal="ngModel" [(ngModel)]="blurFilter" [disabled]="!blurFilterFlag || !augmentRateFlag">
+            </div>
+            <div *ngIf="blurFilterVal.invalid" class="warn">Please enter a number between 0 and 1.</div>
+
+            <!-- random hue -->
+            <mat-slide-toggle class="train-param-slide" name="random-hue-flag" color="primary"
+              [(ngModel)]="randomHueFlag" [disabled]="!augmentRateFlag">
+              <span class="param-title">Random Hue</span>
+            </mat-slide-toggle>
+            <div class="input-area">
+              <input class="form-num" name="random-hue" type="number" required min="0" max="1" step="0.1"
+                #randomHueVal="ngModel" [(ngModel)]="randomHue" [disabled]="!randomHueFlag || !augmentRateFlag">
+            </div>
+            <div *ngIf="randomHueVal.invalid" class="warn">Please enter a number between 0 and 1.</div>
+
+            <!-- random saturation -->
+            <mat-slide-toggle class="train-param-slide" name="random-saturation-flag" color="primary"
+              [(ngModel)]="randomSaturationFlag" [disabled]="!augmentRateFlag">
+              <span class="param-title">Random Saturation</span>
+            </mat-slide-toggle>
+            <div class="input-area">
+              <input class="form-num" name="random-saturation" type="number" required min="0" max="1" step="0.1"
+                #randomSaturationVal="ngModel" [(ngModel)]="randomSaturation"
+                [disabled]="!randomSaturationFlag || !augmentRateFlag">
+            </div>
+            <div *ngIf="randomSaturationVal.invalid" class="warn">Please enter a number between 0 and 1.</div>
+
+            <!-- random brightness -->
+            <mat-slide-toggle class="train-param-slide" name="random-brightness-flag" color="primary"
+              [(ngModel)]="randomBrightnessFlag" [disabled]="!augmentRateFlag">
+              <span class="param-title">Random Brightness</span>
+            </mat-slide-toggle>
+            <div class="input-area">
+              <input class="form-num" name="random-brightness" type="number" required min="0" max="1" step="0.1"
+                #randomBrightnessVal="ngModel" [(ngModel)]="randomBrightness"
+                [disabled]="!randomBrightnessFlag || !augmentRateFlag">
+            </div>
+            <div *ngIf="randomBrightnessVal.invalid" class="warn">Please enter a number between 0 and 1.</div>
+
+            <!-- random contrast -->
+            <mat-slide-toggle class="train-param-slide" name="random-contrast-flag" color="primary"
+              [(ngModel)]="randomContrastFlag" [disabled]="!augmentRateFlag">
+              <span class="param-title">Random Contrast</span>
+            </mat-slide-toggle>
+            <div class="input-area">
+              <input class="form-num" name="random-contrast" type="number" required min="0" max="1" step="0.1"
+                #randomContrastVal="ngModel" [(ngModel)]="randomContrast"
+                [disabled]="!randomContrastFlag || !augmentRateFlag">
+            </div>
+            <div *ngIf="randomContrastVal.invalid" class="warn">Please enter a number between 0 and 1.</div>
+
+            <!-- grayscale -->
+            <mat-slide-toggle class="train-param-slide" name="grayscale-flag" color="primary"
+              [(ngModel)]="grayscaleFlag" [disabled]="!augmentRateFlag">
+              <span class="param-title">Grayscale</span>
+            </mat-slide-toggle>
+          </div>
+        </div>
+      </div>
+
     </div>
     <mat-card-actions>
       <button mat-button color="primary" class="training-button"

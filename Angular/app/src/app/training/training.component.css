@@ -58,7 +58,23 @@ h3 {
   margin-top: 20px;
 }
 
+.train-param-area {
+  margin-left: 10px;
+  padding: 10px;
+  border: 2px solid silver;
+  border-radius: 30px;
+}
+
+.param-type {
+  font-weight: bold;
+}
+
 .param-title {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.train-param-slide {
   margin-top: 10px;
   margin-left: 10px;
 }
@@ -71,6 +87,7 @@ h3 {
   border: 2px solid silver;
   border-radius: 30px;
   padding: 0 10px;
+  margin-top: 5px;
   width: 100px;
 }
 
@@ -78,6 +95,10 @@ h3 {
   margin: 5px;
   border: none;
   width: 90%;
+}
+
+.train-column-area {
+  margin-left: 5px;
 }
 
 .param-radio {

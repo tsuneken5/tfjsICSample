@@ -9,6 +9,7 @@ import { ImageInfo } from '../models/image-info';
 export class CanvasService {
   private imageSize: number = constant.IMAGE_SIZE;
   private thumbnailSize: number = constant.THUMBNAIL_SIZE;
+  private tensorSize: number = constant.INPUT_SHAPE[0];
 
   private dummyId: number = -1
 
@@ -211,13 +212,25 @@ export class CanvasService {
   }
 
   public async getTrainingImage(imgStr: string): Promise<ImageData> {
+    const that = this;
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.src = imgStr;
       img.onload = () => {
         const canvas = document.createElement('canvas') as HTMLCanvasElement;
-        canvas.width = img.width;
-        canvas.height = img.height;
+        let imageWidth = img.naturalWidth;
+        let imageHeight = img.naturalHeight;
+        imageWidth = that.tensorSize;
+        let scale = that.tensorSize / img.naturalWidth;
+        imageHeight = img.naturalHeight * scale;
+        if (imageHeight > that.tensorSize) {
+          imageHeight = that.tensorSize;
+          scale = that.tensorSize / img.naturalHeight;
+          imageWidth = img.naturalWidth * scale;
+        }
+
+        canvas.width = imageWidth;
+        canvas.height = imageHeight;
         const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         resolve(ctx.getImageData(0, 0, canvas.width, canvas.height));

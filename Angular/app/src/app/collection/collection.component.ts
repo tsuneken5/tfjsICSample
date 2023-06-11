@@ -10,7 +10,6 @@ import { CanvasService } from '../canvas/canvas.service';
 
 import { LabeledData } from '../models/labeled-data';
 import { ImageInfo } from '../models/image-info';
-import { Param } from '../models/param';
 
 import { ThumbnailComponent } from '../thumbnail/thumbnail.component';
 import { MessageDialogComponent } from '../message-dialog/message-dialog.component'

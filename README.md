@@ -1,5 +1,6 @@
 # TensorFlow.js Image Classification Sample
-勉強がてらTensorFlow.jsで作成した画像分類器です。勉強用なので色々と無駄に機能を付け足していきます。
+勉強がてらTensorFlow.jsで作成した画像分類器です。<br>
+勉強用なので色々と無駄に機能を付け足していきます。
 
 # Requirement
 ## Angular
@@ -20,7 +21,6 @@ open your browser on http://localhost:4200/
 
 # Wish List
 - IndexedDBへのプロジェクトの保存
-- 画像のデータオーギュメンテーション
 - データセットの追加
 - Reactへの転記
 

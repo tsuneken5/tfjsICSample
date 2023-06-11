@@ -42,6 +42,37 @@ export const DEFAULT_BACTH_SIZE: number = 2;
 export const DEFAULT_LEARNING_RATE: number = 0.001;
 export const DEFAULT_VALIDATION_SPLIT: number = 0.2;
 
+// data augument parameter
+export const DEFAULT_AUGMENT_RATE_FLAG: boolean = false;
+export const DEFAULT_AUGMENT_RATE: number = 0.2;
+export const DEFAULT_RANDOM_HUE_FLAG: boolean = false;
+export const DEFAULT_RANDOM_HUE: number = 0.1;
+export const DEFAULT_RANDOM_SATURATION_FLAG: boolean = false;
+export const DEFAULT_RANDOM_SATURATION: number = 0.1;
+export const DEFAULT_RANDOM_BRIGHTNESS_FLAG: boolean = false;
+export const DEFAULT_RANDOM_BRIGHTNESS: number = 0.1;
+export const DEFAULT_RANDOM_CONTRAST_FLAG: boolean = false;
+export const DEFAULT_RANDOM_CONTRAST: number = 0.1;
+export const DEFAULT_GRAYSCALE_FLAG: boolean = false;
+export const DEFAULT_NOISE_INJECTION_FLAG: boolean = false;
+export const DEFAULT_NOISE_INJECTION: number = 0.1;
+export const DEFAULT_BLUR_FILTER_FLAG: boolean = false;
+export const DEFAULT_BLUR_FILTER: number = 0.1;
+export const DEFAULT_CUT_OUT_FLAG: boolean = false;
+export const DEFAULT_CUT_OUT_RANGE: number = 0.1;
+export const DEFAULT_CROP_FLAG: boolean = false;
+export const DEFAULT_CROP_RANGE: number = 0.9;
+export const DEFAULT_SHEAR_FLAG: boolean = false;
+export const DEFAULT_SHEAR_RANGE: number = 0.1;
+export const DEFAULT_ROTATION_FLAG: boolean = false;
+export const DEFAULT_ROTATION_RANGE: number = 5;
+export const DEFAULT_WIDTH_SHIFT_FLAG: boolean = false;
+export const DEFAULT_WIDTH_SHIFT_RANGE: number = 0.1;
+export const DEFAULT_HEIGHT_SHIFT_FLAG: boolean = false;
+export const DEFAULT_HEIGHT_SHIFT_RANGE: number = 0.1;
+export const DEFAULT_HORIZONTAL_FLIP_FLAG: boolean = false;
+export const DEFAULT_VERTICAL_FLIP_FLAG: boolean = false;
+
 export const DETECT_MENUS: Param[] = [
   new Param('File'), new Param('Webcam')
 ];
