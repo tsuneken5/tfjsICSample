@@ -1,4 +1,4 @@
-import { Param } from './models/param';
+import { Param } from '../models/param';
 
 export const TMP_MODEL_NAME: string = 'tmp-model'
 

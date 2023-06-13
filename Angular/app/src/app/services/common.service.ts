@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import * as constant from '../constant';
+import * as constant from '../properties/constant';
 
 import { LabeledData } from '../models/labeled-data';
 import { ReportLog } from '../models/report-log';

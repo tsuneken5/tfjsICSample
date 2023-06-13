@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { CommonService } from '../common/common.service';
+import { CommonService } from '../../../services/common.service';
 
 @Component({
   selector: 'app-overlay-canvas',

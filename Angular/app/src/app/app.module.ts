@@ -5,13 +5,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 
-import { HeaderComponent } from './header/header.component';
-import { CollectionComponent } from './collection/collection.component';
-import { TrainingComponent } from './training/training.component';
-import { PreviewComponent } from './preview/preview.component';
-import { ThumbnailComponent } from './thumbnail/thumbnail.component';
-import { OverlayCanvasComponent } from './overlay-canvas/overlay-canvas.component';
-import { MessageDialogComponent } from './message-dialog/message-dialog.component';
+import { HeaderComponent } from './components/shared/header/header.component';
+import { CollectionComponent } from './components/home/collection/collection.component';
+import { TrainingComponent } from './components/home/training/training.component';
+import { PreviewComponent } from './components/home/preview/preview.component';
+import { ThumbnailComponent } from './components/shared/thumbnail/thumbnail.component';
+import { OverlayCanvasComponent } from './components/shared/overlay-canvas/overlay-canvas.component';
+import { MessageDialogComponent } from './components/shared/message-dialog/message-dialog.component';
 
 import { FormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';

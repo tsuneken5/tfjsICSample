@@ -4,17 +4,17 @@ import * as tf from '@tensorflow/tfjs';
 import { ChartConfiguration } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-import * as constant from '../constant';
-import { UtilService } from '../util/util.service';
-import { CommonService } from '../common/common.service';
-import { CanvasService } from '../canvas/canvas.service';
-import { DataAugmentService } from '../data-augment/data-augment.service'
+import * as constant from '../../../properties/constant';
+import { UtilService } from '../../../services/util.service';
+import { CommonService } from '../../../services/common.service';
+import { CanvasService } from '../../../services/canvas.service';
+import { DataAugmentService } from '../../../services/data-augment.service'
 
-import { LabeledData } from '../models/labeled-data';
-import { ReportLog, ReportRogLabels } from '../models/report-log';
-import { Param } from '../models/param';
+import { LabeledData } from '../../../models/labeled-data';
+import { ReportLog, ReportRogLabels } from '../../../models/report-log';
+import { Param } from '../../../models/param';
 
-import { ThumbnailComponent } from '../thumbnail/thumbnail.component';
+import { ThumbnailComponent } from '../../shared/thumbnail/thumbnail.component';
 
 @Component({
   selector: 'app-training',

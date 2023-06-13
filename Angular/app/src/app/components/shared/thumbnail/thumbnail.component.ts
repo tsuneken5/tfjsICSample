@@ -2,10 +2,10 @@ import { Component, ViewChild, Input, Output, EventEmitter } from '@angular/core
 import { Overlay } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 
-import * as constant from '../constant';
-import { CanvasService } from '../canvas/canvas.service';
-import { CommonService } from '../common/common.service'
-import { ImageInfo } from '../models/image-info';
+import * as constant from '../../../properties/constant';
+import { CanvasService } from '../../../services/canvas.service';
+import { CommonService } from '../../../services/common.service'
+import { ImageInfo } from '../../../models/image-info';
 
 import { OverlayCanvasComponent } from '../overlay-canvas/overlay-canvas.component'
 

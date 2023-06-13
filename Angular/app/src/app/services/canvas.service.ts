@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as constant from '../constant';
+import * as constant from '../properties/constant';
 
 import { ImageInfo } from '../models/image-info';
 
