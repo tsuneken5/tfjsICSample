@@ -111,6 +111,8 @@ export class CollectionComponent {
   }
 
   public async getDataset(args: any): Promise<void> {
+    this.deleteImageAll();
+
     this.labeledDatas = this.commonService.getLabeledDatas();
     await this.utilService.sleep(100);
     this.initThumbnail();
@@ -417,6 +419,8 @@ export class CollectionComponent {
         this.deleteImage(this.labeledDatas[i].imageInfos[0].id);
       }
     }
+
+    this.deleteList = [];
   }
 
   public pushDeleteImageAll(): void {
@@ -609,7 +613,6 @@ export class CollectionComponent {
       inputNode.value = '';
 
       try {
-        this.deleteImageAll();
         this.labeledDatas = [];
         for (let dataset of datasets.dataset) {
           let labeledData = new LabeledData(-1);
