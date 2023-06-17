@@ -90,3 +90,5 @@ export const CHART_COLORS: string[] = [
   '#7fff7f',
   '#bfff7f',
 ];
+
+export const STORE_NAME: string = 'dataset';

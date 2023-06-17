@@ -9,6 +9,7 @@ import { ReportLog } from '../models/report-log';
   providedIn: 'root'
 })
 export class CommonService {
+  private project: string = '';
   private labeledDatas: LabeledData[] = [];
 
   // training parameter
@@ -61,6 +62,14 @@ export class CommonService {
     for (let i = 0; i < constant.DEFAULT_LABELED_DATAS_SIZE; i++) {
       this.labeledDatas.push(new LabeledData(i + 1));
     }
+  }
+
+  public getProject(): string {
+    return this.project;
+  }
+
+  public setProject(project: string): void {
+    this.project = project;
   }
 
   public getLabeledDatas(): LabeledData[] {

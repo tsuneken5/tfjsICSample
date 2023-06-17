@@ -194,3 +194,6 @@
     <input hidden (change)="uploadDataset()" #jsonInput accept="application/json" type="file" id="json">
   </div>
 </mat-card>
+
+<app-project-menu (setDataset)="setDataset($event)" (getDataset)="getDataset($event)">
+</app-project-menu>

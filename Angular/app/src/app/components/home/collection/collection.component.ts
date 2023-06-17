@@ -1,7 +1,7 @@
-import { Component, ViewChildren, QueryList } from '@angular/core';
+import { Component, ViewChildren, ViewChild, QueryList } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ChartConfiguration } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { MatDialog } from '@angular/material/dialog';
 
 import * as constant from '../../../properties/constant';
 import { UtilService } from '../../../services/util.service';
@@ -12,7 +12,8 @@ import { LabeledData } from '../../../models/labeled-data';
 import { ImageInfo } from '../../../models/image-info';
 
 import { ThumbnailComponent } from '../../shared/thumbnail/thumbnail.component';
-import { MessageDialogComponent } from '../../shared/message-dialog/message-dialog.component'
+import { MessageDialogComponent } from '../../shared/message-dialog/message-dialog.component';
+import { ProjectMenuComponent } from '../../shared/project-menu/project-menu.component';
 
 @Component({
   selector: 'app-collection',
@@ -21,6 +22,7 @@ import { MessageDialogComponent } from '../../shared/message-dialog/message-dial
 })
 export class CollectionComponent {
   @ViewChildren(ThumbnailComponent) thumbnailComponent!: QueryList<ThumbnailComponent>;
+  @ViewChild(ProjectMenuComponent) projectMenuComponent!: ProjectMenuComponent;
 
   public prefix: string = constant.PREFIX_COLLECTION;
 
@@ -87,6 +89,32 @@ export class CollectionComponent {
     private canvasService: CanvasService,
     private dialog: MatDialog,
   ) { }
+
+
+  private initThumbnail(): void {
+    for (let i = 0; i < this.labeledDatas.length; i++) {
+      for (let imageInfo of this.labeledDatas[i].imageInfos) {
+        this.addThumbnail(i, imageInfo.base64, imageInfo.id);
+      }
+      this.changeLabelWidth(i);
+    }
+
+    this.changeSummaryBarWidth();
+
+    const area = document.getElementById('coll-summary-area') as HTMLElement;
+    area.style.display = '';
+  }
+
+  public setDataset(args: any): void {
+    this.commonService.setLabeledDatas(this.labeledDatas);
+    this.projectMenuComponent.addProject();
+  }
+
+  public async getDataset(args: any): Promise<void> {
+    this.labeledDatas = this.commonService.getLabeledDatas();
+    await this.utilService.sleep(100);
+    this.initThumbnail();
+  }
 
   public hasEmptyImage(): boolean {
     let count = 0;
@@ -418,6 +446,8 @@ export class CollectionComponent {
     }
     this.changeSummaryBarWidth();
     this.refreshLocalProject();
+
+    this.commonService.setHistory(null);
   }
 
   public pushRefreshDataset(): void {
@@ -526,7 +556,6 @@ export class CollectionComponent {
         this.deleteClass(index);
       }
     });
-
   }
 
   public async downloadDataset(): Promise<void> {
@@ -611,22 +640,12 @@ export class CollectionComponent {
     this.refreshLocalProject();
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.labeledDatas = this.commonService.getLabeledDatas();
   }
 
   ngAfterViewInit(): void {
-    for (let i = 0; i < this.labeledDatas.length; i++) {
-      for (let imageInfo of this.labeledDatas[i].imageInfos) {
-        this.addThumbnail(i, imageInfo.base64, imageInfo.id);
-      }
-      this.changeLabelWidth(i);
-    }
-
-    this.changeSummaryBarWidth();
-
-    const area = document.getElementById('coll-summary-area') as HTMLElement;
-    area.style.display = '';
+    this.initThumbnail();
   }
 
   ngOnDestroy(): void {

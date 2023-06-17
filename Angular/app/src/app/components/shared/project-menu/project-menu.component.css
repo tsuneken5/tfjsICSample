@@ -1,0 +1,36 @@
+h3 {
+  margin: 10px;
+}
+
+.menu-area {
+  margin-top: 30px;
+}
+
+.button-area {
+  display: grid;
+  place-items: center;
+  margin-left: 20px;
+}
+
+.input-project {
+  border: 2px solid silver;
+
+  padding: 5px;
+  width: 100px;
+  border-radius: 20px;
+}
+
+.select-project {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  padding: 5px;
+  width: 100px;
+  border-radius: 20px;
+}
+
+.menu-button {
+  margin: 10px;
+  background-color: #E8F0FE;
+}

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 
 import * as tf from '@tensorflow/tfjs';
 
@@ -13,12 +13,16 @@ import { CanvasService } from '../../../services/canvas.service';
 import { LabeledData } from '../../../models/labeled-data';
 import { Param } from '../../../models/param';
 
+import { ProjectMenuComponent } from '../../shared/project-menu/project-menu.component';
+
 @Component({
   selector: 'app-preview',
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.css']
 })
 export class PreviewComponent {
+  @ViewChild(ProjectMenuComponent) projectMenuComponent!: ProjectMenuComponent;
+
   public menu: string = constant.DEFAULT_DETECT_MENU;
   public detectMenus: Param[] = constant.DETECT_MENUS;
 
@@ -78,6 +82,62 @@ export class PreviewComponent {
     private commonService: CommonService,
     private canvasService: CanvasService,
   ) { }
+
+  public setDataset(args: any): void {
+    this.commonService.setLabeledDatas(this.labeledDatas);
+
+    this.projectMenuComponent.addProject();
+  }
+
+  private setChartHeight(): void {
+    const size = this.trainedClassList.length;
+    const height = size * this.detectBarHeight;
+
+    const area = document.getElementById('detect-chart-area') as HTMLElement;
+    area.style.height = height + 'px';
+  }
+
+  public async getDataset(args: any): Promise<void> {
+    this.errorMessage = '';
+    this.setupStatus = 'preparing model ...';
+
+    this.trainedClassList = this.commonService.getTrainedIndexClass();
+    this.labeledDatas = this.commonService.getLabeledDatas();
+
+
+    this.setupStatus = '';
+    if (this.trainedClassList.length == 0) {
+      this.errorMessage = 'let\'s training model';
+      this.canDetect = false;
+      this.isPlay = false;
+    } else {
+      try {
+        this.canDetect = true;
+        this.isPlay = true;
+        this.model = await tf.loadLayersModel('indexeddb://' + constant.TMP_MODEL_NAME);
+
+        this.setupStatus = 'preparing result chart ... ';
+        this.classes = [];
+        for (let i = 0; i < this.labeledDatas.length; i++) {
+          if (this.trainedClassList.includes(i)) {
+            this.classes.push(this.labeledDatas[i].label);
+          }
+        }
+        this.drawDetect([]);
+
+        await this.utilService.sleep(100);
+        this.setupStatus = 'preparing canvas ... ';
+        this.setupCanvas();
+        this.setChartHeight();
+
+        this.setupStatus = '';
+      } catch {
+        this.errorMessage = 'let\'s training model';
+        this.canDetect = false;
+        this.isPlay = false;
+      }
+    }
+  }
 
   private drawDetect(score: number[]): void {
     if (score.length == 0) {
@@ -225,53 +285,7 @@ export class PreviewComponent {
   }
 
   async ngOnInit(): Promise<void> {
-    this.errorMessage = '';
-    this.setupStatus = 'preparing model ...';
-
-    this.trainedClassList = this.commonService.getTrainedIndexClass();
-    this.labeledDatas = this.commonService.getLabeledDatas();
-
-    this.setupStatus = '';
-    if (this.trainedClassList.length == 0) {
-      this.errorMessage = 'let\'s training model';
-      this.isPlay = false;
-    } else {
-      try {
-        this.canDetect = true;
-        this.isPlay = true;
-
-        this.model = await tf.loadLayersModel('indexeddb://' + constant.TMP_MODEL_NAME);
-
-        this.setupStatus = 'preparing result chart ... ';
-        for (let i = 0; i < this.labeledDatas.length; i++) {
-          if (this.trainedClassList.includes(i)) {
-            this.classes.push(this.labeledDatas[i].label);
-          }
-        }
-        this.drawDetect([]);
-
-        await this.utilService.sleep(100);
-        this.setupStatus = 'preparing canvas ... ';
-        this.setupCanvas();
-
-        this.setupStatus = '';
-
-      } catch {
-        this.errorMessage = 'let\'s training model';
-        this.canDetect = false;
-        this.isPlay = false;
-      }
-    }
-  }
-
-  ngAfterViewInit(): void {
-    if (this.canDetect) {
-      const size = this.trainedClassList.length;
-      const height = size * this.detectBarHeight;
-
-      const area = document.getElementById('detect-chart-area') as HTMLElement;
-      area.style.height = height + 'px';
-    }
+    this.getDataset({});
   }
 
   ngOnDestroy(): void {

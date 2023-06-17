@@ -1,7 +1,7 @@
 <h2>preview works!</h2>
 <mat-card color="primary">
   <h3>preview menu</h3>
-  <select [(ngModel)]="menu" class="select-menu" (change)="changeMenu()" [disabled]="!canDetect">
+  <select class="select-menu" [(ngModel)]="menu" (change)="changeMenu()" [disabled]="!canDetect">
     <option *ngFor="let detectMenu of detectMenus" [value]="detectMenu.value">
       <span class="select-label">{{detectMenu.label}}</span>
     </option>
@@ -78,3 +78,6 @@
     </div>
   </mat-card>
 </div>
+
+<app-project-menu (setDataset)="setDataset($event)" (getDataset)="getDataset($event)">
+</app-project-menu>

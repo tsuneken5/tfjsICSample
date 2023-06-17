@@ -1,4 +1,4 @@
-import { Component, ViewChildren, QueryList } from '@angular/core';
+import { Component, ViewChildren, ViewChild, QueryList } from '@angular/core';
 import * as tf from '@tensorflow/tfjs';
 
 import { ChartConfiguration } from 'chart.js';
@@ -8,13 +8,14 @@ import * as constant from '../../../properties/constant';
 import { UtilService } from '../../../services/util.service';
 import { CommonService } from '../../../services/common.service';
 import { CanvasService } from '../../../services/canvas.service';
-import { DataAugmentService } from '../../../services/data-augment.service'
+import { DataAugmentService } from '../../../services/data-augment.service';
 
 import { LabeledData } from '../../../models/labeled-data';
 import { ReportLog, ReportRogLabels } from '../../../models/report-log';
 import { Param } from '../../../models/param';
 
 import { ThumbnailComponent } from '../../shared/thumbnail/thumbnail.component';
+import { ProjectMenuComponent } from '../../shared/project-menu/project-menu.component';
 
 @Component({
   selector: 'app-training',
@@ -24,6 +25,7 @@ import { ThumbnailComponent } from '../../shared/thumbnail/thumbnail.component';
 
 export class TrainingComponent {
   @ViewChildren(ThumbnailComponent) thumbnailComponent!: QueryList<ThumbnailComponent>;
+  @ViewChild(ProjectMenuComponent) projectMenuComponent!: ProjectMenuComponent;
 
   public prefix: string = constant.PREFIX_TRAINING;
 
@@ -171,6 +173,31 @@ export class TrainingComponent {
     private canvasService: CanvasService,
     private dataAugmentService: DataAugmentService
   ) { }
+
+  private initThumbnail(): void {
+    for (let i = 0; i < this.labeledDatas.length; i++) {
+      for (let imageInfo of this.labeledDatas[i].imageInfos) {
+        this.addThumbnail(i, imageInfo.base64, imageInfo.id);
+      }
+    }
+    if (this.hasTrained() && this.history) {
+      this.drawReport();
+    }
+    this.changeSummaryBarWidth();
+    this.drawSummary();
+  }
+
+  public setDataset(args: any): void {
+    this.commonService.setLabeledDatas(this.labeledDatas);
+    this.projectMenuComponent.addProject();
+  }
+
+  public async getDataset(args: any): Promise<void> {
+    this.labeledDatas = this.commonService.getLabeledDatas();
+    this.history = null;
+    await this.utilService.sleep(100);
+    this.initThumbnail();
+  }
 
   public changeSummary(): void {
     const index = this.viewSummarys.indexOf(this.viewSummary);
@@ -764,7 +791,10 @@ export class TrainingComponent {
   }
 
   public hasTrained(): boolean {
-    return this.trainedClassList.length > 0
+    if (this.history) {
+      return this.trainedClassList.length > 0;
+    }
+    return false;
   }
 
   public async changeDisplayReport(): Promise<void> {
@@ -862,16 +892,7 @@ export class TrainingComponent {
   }
 
   ngAfterViewInit(): void {
-    for (let i = 0; i < this.labeledDatas.length; i++) {
-      for (let imageInfo of this.labeledDatas[i].imageInfos) {
-        this.addThumbnail(i, imageInfo.base64, imageInfo.id);
-      }
-    }
-    if (this.hasTrained()) {
-      this.drawReport();
-    }
-    this.changeSummaryBarWidth();
-    this.drawSummary();
+    this.initThumbnail();
   }
 
   ngOnDestroy(): void {

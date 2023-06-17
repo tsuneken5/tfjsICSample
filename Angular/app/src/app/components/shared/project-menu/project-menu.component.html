@@ -1,0 +1,41 @@
+<mat-card class="menu-area">
+  <h3>project menu</h3>
+  <div class="containar" fxLayout="row">
+    <!-- save -->
+    <div class="containar button-area" fxLayout="row">
+      <input class="input-project" [(ngModel)]="saveProjectName">
+      <button mat-button class="menu-button" color="primary" (click)="saveProject()">
+        <mat-icon>download</mat-icon>
+        save project
+      </button>
+    </div>
+
+    <!-- load -->
+    <div class="containar button-area" fxLayout="row">
+      <select class="select-project" [(ngModel)]="loadProjectName">
+        <option *ngFor="let project of projects" [value]="project">
+          <span>{{ project }}</span>
+        </option>
+      </select>
+      <button mat-button class="menu-button" color="primary" (click)="loadProject()" [disabled]="projects.length == 0">
+        <mat-icon>upload</mat-icon>
+        load project
+      </button>
+    </div>
+
+    <!-- delete -->
+    <div class="containar button-area" fxLayout="row">
+      <select class="select-project" [(ngModel)]="deleteProjectName">
+        <option *ngFor="let project of projects" [value]="project">
+          <span>{{ project }}</span>
+        </option>
+      </select>
+      <button mat-button class="menu-button" color="primary" (click)="deleteProject()"
+        [disabled]="projects.length == 0">
+        <mat-icon>delete_forever</mat-icon>
+        delete project
+      </button>
+    </div>
+
+  </div>
+</mat-card>

@@ -32,6 +32,25 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 
 import { NgChartsModule } from 'ng2-charts';
 import { IntegerOnlyDirective } from './directive/integer-only.directive';
+import { ProjectMenuComponent } from './components/shared/project-menu/project-menu.component';
+
+import { NgxIndexedDBModule, DBConfig } from 'ngx-indexed-db';
+import { AlartDialogComponent } from './components/shared/alart-dialog/alart-dialog.component';
+
+const dbConfig: DBConfig = {
+  name: 'project',
+  version: 1,
+  objectStoresMeta: [{
+    store: 'dataset',
+    storeConfig: { keyPath: 'project', autoIncrement: false },
+    storeSchema: [
+      // { name: 'name', keypath: 'name', options: { unique: true } },
+      { name: 'project', keypath: 'project', options: { unique: true } },
+      { name: 'labeledDatas', keypath: 'labeledDatas', options: { unique: false } },
+      { name: 'trainedClassList', keypath: 'trainedClassList', options: { unique: false } }
+    ]
+  }]
+};
 
 @NgModule({
   declarations: [
@@ -44,6 +63,8 @@ import { IntegerOnlyDirective } from './directive/integer-only.directive';
     OverlayCanvasComponent,
     MessageDialogComponent,
     IntegerOnlyDirective,
+    ProjectMenuComponent,
+    AlartDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -64,7 +85,8 @@ import { IntegerOnlyDirective } from './directive/integer-only.directive';
     MatDialogModule,
     MatFormFieldModule,
     MatSlideToggleModule,
-    NgChartsModule
+    NgChartsModule,
+    NgxIndexedDBModule.forRoot(dbConfig)
   ],
   providers: [],
   bootstrap: [AppComponent],
