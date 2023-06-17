@@ -11,7 +11,11 @@ import { TrainingComponent } from './components/home/training/training.component
 import { PreviewComponent } from './components/home/preview/preview.component';
 import { ThumbnailComponent } from './components/shared/thumbnail/thumbnail.component';
 import { OverlayCanvasComponent } from './components/shared/overlay-canvas/overlay-canvas.component';
-import { MessageDialogComponent } from './components/shared/message-dialog/message-dialog.component';
+import { ProjectMenuComponent } from './components/shared/project-menu/project-menu.component';
+import { AlartDialogComponent } from './components/shared/alart-dialog/alart-dialog.component';
+import { ConfirmDialogComponent } from './components/shared/confirm-dialog/confirm-dialog.component';
+
+import { IntegerOnlyDirective } from './directive/integer-only.directive';
 
 import { FormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -31,11 +35,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 
 import { NgChartsModule } from 'ng2-charts';
-import { IntegerOnlyDirective } from './directive/integer-only.directive';
-import { ProjectMenuComponent } from './components/shared/project-menu/project-menu.component';
-
 import { NgxIndexedDBModule, DBConfig } from 'ngx-indexed-db';
-import { AlartDialogComponent } from './components/shared/alart-dialog/alart-dialog.component';
 
 const dbConfig: DBConfig = {
   name: 'project',
@@ -61,10 +61,10 @@ const dbConfig: DBConfig = {
     PreviewComponent,
     ThumbnailComponent,
     OverlayCanvasComponent,
-    MessageDialogComponent,
     IntegerOnlyDirective,
     ProjectMenuComponent,
     AlartDialogComponent,
+    ConfirmDialogComponent,
   ],
   imports: [
     BrowserModule,

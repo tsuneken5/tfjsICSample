@@ -9,7 +9,7 @@ import * as constant from '../../../properties/constant';
 import { CommonService } from '../../../services/common.service';
 import { LabeledData } from '../../../models/labeled-data';
 
-import { MessageDialogComponent } from '../../shared/message-dialog/message-dialog.component';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { AlartDialogComponent } from '../../shared/alart-dialog/alart-dialog.component';
 
 @Component({
@@ -48,7 +48,7 @@ export class ProjectMenuComponent {
     if (this.projects.includes(this.saveProjectName)) {
       const message = 'Overwrite the project. Are you sure?'
 
-      const dialogRef = this.dialog.open(MessageDialogComponent, {
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
         data: { text: message },
       });
 
@@ -140,7 +140,7 @@ export class ProjectMenuComponent {
     }
 
     const message = 'delete the project. Are you sure?'
-    const dialogRef = this.dialog.open(MessageDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: { text: message },
     });
 

@@ -164,9 +164,10 @@
   <h3>collection menu</h3>
   <div class="container" fxLayout="row">
     <button mat-button class="menu-button" color="primary" (click)="pushDeleteImageInList()"
-      [disabled]="openWebcamAreaFlg">
+      [disabled]="openWebcamAreaFlg || deleteList.length == 0">
       <mat-icon>delete_forever</mat-icon>
       delete selected images
+      <span *ngIf="deleteList.length > 0"> ( {{ deleteList.length }} ) </span>
     </button>
     <button mat-button class="menu-button" color="primary" (click)="pushDeleteImageAll()"
       [disabled]="openWebcamAreaFlg">

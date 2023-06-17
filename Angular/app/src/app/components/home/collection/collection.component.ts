@@ -12,7 +12,7 @@ import { LabeledData } from '../../../models/labeled-data';
 import { ImageInfo } from '../../../models/image-info';
 
 import { ThumbnailComponent } from '../../shared/thumbnail/thumbnail.component';
-import { MessageDialogComponent } from '../../shared/message-dialog/message-dialog.component';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { ProjectMenuComponent } from '../../shared/project-menu/project-menu.component';
 
 @Component({
@@ -32,7 +32,7 @@ export class CollectionComponent {
   public minCanTrainImageNum = constant.MIN_CAN_TRAIN_IMAGE_NUM;
   private maxClassesLength: number = constant.MAX_CLASS_SIZE;
 
-  private deleteList: number[] = [];
+  public deleteList: number[] = [];
 
   public openWebcamAreaFlg: boolean = false;
   private webcamElement: any = null;
@@ -399,7 +399,7 @@ export class CollectionComponent {
   public pushDeleteImageInList(): void {
     const message = 'Delete selected image(s). Are you sure?'
 
-    const dialogRef = this.dialog.open(MessageDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: { text: message },
     });
 
@@ -422,7 +422,7 @@ export class CollectionComponent {
   public pushDeleteImageAll(): void {
     const message = 'Delete all images. Are you sure?'
 
-    const dialogRef = this.dialog.open(MessageDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: { text: message },
     });
 
@@ -453,7 +453,7 @@ export class CollectionComponent {
   public pushRefreshDataset(): void {
     const message = 'Refresh dataset. Are you sure?'
 
-    const dialogRef = this.dialog.open(MessageDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: { text: message },
     });
 
@@ -547,7 +547,7 @@ export class CollectionComponent {
   public pushDeleteClass(index: number): void {
     const message = 'Delete selected class. Are you sure?'
 
-    const dialogRef = this.dialog.open(MessageDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: { text: message },
     });
 
