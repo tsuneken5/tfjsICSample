@@ -181,8 +181,6 @@ export class SummaryComponent {
   ngOnInit(): void {
     this.labeledDatas = this.commonService.getLabeledDatas();
 
-    console.log('prefix', this.prefix);
-
     switch (this.prefix) {
       case constant.PREFIX_COLLECTION:
         this.summaryTitle = 'collection summary';

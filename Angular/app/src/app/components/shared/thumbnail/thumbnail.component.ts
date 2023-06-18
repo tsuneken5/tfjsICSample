@@ -42,16 +42,19 @@ export class ThumbnailComponent {
   private drawThumbnails(): void {
     const thumbnailsElem = document.getElementById(this.prefix + '-thumbnails' + this.index) as HTMLDivElement;
 
-    if (this.thumbnailsLayout == this.thumbnailsLayoutMenus[0]) {
-      thumbnailsElem.style.overflowX = 'auto';
-      thumbnailsElem.style.overflowY = '';
-      thumbnailsElem.style.flexDirection = '';
-      thumbnailsElem.style.flexWrap = '';
-    } else if (this.thumbnailsLayout == this.thumbnailsLayoutMenus[1]) {
-      thumbnailsElem.style.overflowX = '';
-      thumbnailsElem.style.overflowY = 'auto';
-      thumbnailsElem.style.flexDirection = 'row';
-      thumbnailsElem.style.flexWrap = 'wrap';
+    switch (this.thumbnailsLayout) {
+      case this.thumbnailsLayoutMenus[0]:
+        thumbnailsElem.style.overflowX = 'auto';
+        thumbnailsElem.style.overflowY = '';
+        thumbnailsElem.style.flexDirection = '';
+        thumbnailsElem.style.flexWrap = '';
+        break;
+      case this.thumbnailsLayoutMenus[1]:
+        thumbnailsElem.style.overflowX = '';
+        thumbnailsElem.style.overflowY = 'auto';
+        thumbnailsElem.style.flexDirection = 'row';
+        thumbnailsElem.style.flexWrap = 'wrap';
+        break;
     }
   }
 
@@ -67,10 +70,13 @@ export class ThumbnailComponent {
     canvas.style.border = 'thin solid blue';
 
     const selectBox = document.getElementById(this.prefix + '-thumbnail-select' + id) as HTMLInputElement;
-    if (this.prefix == this.collPrefix) {
-      selectBox.checked = true;
-    } else if (this.prefix == this.trainPrefix) {
-      selectBox.checked = false;
+    switch (this.prefix) {
+      case this.collPrefix:
+        selectBox.checked = true;
+        break;
+      case this.trainPrefix:
+        selectBox.checked = false;
+        break;
     }
   }
 
@@ -80,10 +86,13 @@ export class ThumbnailComponent {
     canvas.style.border = 'thin solid red';
 
     const selectBox = document.getElementById(this.prefix + '-thumbnail-select' + id) as HTMLInputElement;
-    if (this.prefix == this.collPrefix) {
-      selectBox.checked = false;
-    } else if (this.prefix == this.trainPrefix) {
-      selectBox.checked = true;
+    switch (this.prefix) {
+      case this.collPrefix:
+        selectBox.checked = false;
+        break;
+      case this.trainPrefix:
+        selectBox.checked = true;
+        break;
     }
   }
 
@@ -128,10 +137,13 @@ export class ThumbnailComponent {
     const selectBox = document.createElement('input') as HTMLInputElement;
     selectBox.type = 'checkbox';
     selectBox.id = this.prefix + '-thumbnail-select' + id;
-    if (this.prefix == this.collPrefix) {
-      selectBox.checked = false;
-    } else if (this.prefix == this.trainPrefix) {
-      selectBox.checked = true;
+    switch (this.prefix) {
+      case this.collPrefix:
+        selectBox.checked = false;
+        break;
+      case this.trainPrefix:
+        selectBox.checked = true;
+        break;
     }
     selectBox.style.position = 'absolute';
     selectBox.style.top = '1%';

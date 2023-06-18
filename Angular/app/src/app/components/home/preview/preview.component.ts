@@ -265,22 +265,23 @@ export class PreviewComponent {
       return;
     }
 
-    if (this.menu == this.detectMenus[0].value) {
-      // file
-      if (this.webcamElement != null) {
-        this.webcamElement.pause;
-        this.webcam.stop;
-        this.isPlay = false;
-      }
-
-      this.setupCanvas();
-      this.drawDetect([]);
-    }
-    else if (this.menu == this.detectMenus[1].value) {
-      // webcam
-      await this.setupWebcam();
-      this.webcam.start;
-      this.playWebcam();
+    switch (this.menu) {
+      case this.detectMenus[0].value:
+        // file
+        if (this.webcamElement != null) {
+          this.webcamElement.pause;
+          this.webcam.stop;
+          this.isPlay = false;
+        }
+        this.setupCanvas();
+        this.drawDetect([]);
+        break;
+      case this.detectMenus[1].value:
+        // webcam
+        await this.setupWebcam();
+        this.webcam.start;
+        this.playWebcam();
+        break;
     }
   }
 
