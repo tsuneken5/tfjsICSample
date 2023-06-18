@@ -1,0 +1,28 @@
+.summary-area {
+  margin-top: 10px;
+  padding: 5px;
+}
+
+.summary {
+  width: 100%;
+}
+
+.delete-area {
+  position: absolute;
+  top: 0%;
+  right: 0%;
+}
+
+.delete-button {
+  margin-left: 5px;
+  background-color: #E8F0FE;
+}
+
+.chart {
+  margin: 0 auto;
+}
+
+.summary-message {
+  margin-left: 10px;
+  color: red;
+}

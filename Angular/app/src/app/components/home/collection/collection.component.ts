@@ -1,7 +1,5 @@
 import { Component, ViewChildren, ViewChild, QueryList } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ChartConfiguration } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 import * as constant from '../../../properties/constant';
 import { UtilService } from '../../../services/util.service';
@@ -14,6 +12,7 @@ import { ImageInfo } from '../../../models/image-info';
 import { ThumbnailComponent } from '../../shared/thumbnail/thumbnail.component';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { ProjectMenuComponent } from '../../shared/project-menu/project-menu.component';
+import { SummaryComponent } from '../../shared/summary/summary.component';
 
 @Component({
   selector: 'app-collection',
@@ -23,6 +22,7 @@ import { ProjectMenuComponent } from '../../shared/project-menu/project-menu.com
 export class CollectionComponent {
   @ViewChildren(ThumbnailComponent) thumbnailComponent!: QueryList<ThumbnailComponent>;
   @ViewChild(ProjectMenuComponent) projectMenuComponent!: ProjectMenuComponent;
+  @ViewChild(SummaryComponent) summaryComponent!: SummaryComponent;
 
   public prefix: string = constant.PREFIX_COLLECTION;
 
@@ -44,45 +44,6 @@ export class CollectionComponent {
   public delay: number = constant.DEFAULT_DELAY;
   public duration: number = constant.DEFAULT_DURATION;
 
-  public displaySummary: boolean = false;
-
-  public viewSummarys: string[] = ['doughnut', 'bar']
-  public viewSummary: string = this.viewSummarys[0]
-
-  private summaryBarWidth: number = constant.SUMMARY_BAR_WIDTH;
-
-  private summaryBarChartColors: string[] = constant.CHART_COLORS;
-  public summaryBarChartLegend = false;
-  public summaryBarChartPlugins = [
-    ChartDataLabels,
-  ];
-
-  public summaryChartData: any = {
-    labels: [],
-    datasets: [
-      { data: [] }
-    ]
-  };
-
-  public summaryChartDoughnutOptions: ChartConfiguration<'doughnut'>['options'] = {
-    responsive: false,
-    animation: false,
-    maintainAspectRatio: false,
-    cutout: 60,
-    plugins: {
-      tooltip: {
-        xAlign: 'center',
-        yAlign: 'center'
-      }
-    }
-  };
-
-  public summaryChartBarOptions: ChartConfiguration<'bar'>['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: false,
-  };
-
   constructor(
     private utilService: UtilService,
     private commonService: CommonService,
@@ -98,11 +59,6 @@ export class CollectionComponent {
       }
       this.changeLabelWidth(i);
     }
-
-    this.changeSummaryBarWidth();
-
-    const area = document.getElementById('coll-summary-area') as HTMLElement;
-    area.style.display = '';
   }
 
   public setDataset(args: any): void {
@@ -114,6 +70,9 @@ export class CollectionComponent {
     this.deleteImageAll();
 
     this.labeledDatas = this.commonService.getLabeledDatas();
+    this.summaryComponent.changeSummaryBarWidth();
+    this.summaryComponent.drawSummary();
+
     await this.utilService.sleep(100);
     this.initThumbnail();
   }
@@ -126,64 +85,6 @@ export class CollectionComponent {
     }
 
     return (count == 0);
-  }
-
-  public async changeSummary(): Promise<void> {
-    const index = this.viewSummarys.indexOf(this.viewSummary);
-    this.viewSummary = this.viewSummarys[(index + 1) % this.viewSummarys.length];
-  }
-
-  private changeSummaryBarWidth(): void {
-    const area = document.getElementById('coll-summary-bar') as HTMLElement;
-    const size = this.summaryBarWidth * this.labeledDatas.length;
-    area.style.width = size + 'px';
-  }
-
-  public changeDisplaySummary(): void {
-    this.displaySummary = !this.displaySummary;
-  }
-
-  public summaryClick(event: any): void {
-    if (event.active.length > 0) {
-      const index = event.active[0].index;
-      let num = 0;
-      let sum = 0;
-      let label = ''
-      for (let i = 0; i < this.labeledDatas.length; i++) {
-        sum += this.labeledDatas[i].imageInfos.length;
-        if (i == index) {
-          num = this.labeledDatas[i].imageInfos.length
-          label = this.labeledDatas[i].label;
-        }
-      }
-
-      const centerX = event.active[0].element.x;
-      const centerY = event.active[0].element.y;
-
-      const canvas = document.getElementById('coll-summary-doughnut') as HTMLCanvasElement;
-      const labels: string[] = [label, Math.round((num / sum) * 100) + ' %'];
-      const font = '15px Meiryo bold';
-      this.canvasService.drawCenteredLabels(canvas, labels, font, centerX, centerY);
-    }
-  }
-
-  private drawSummary(): void {
-    const labels: string[] = [];
-    const data: number[] = [];
-    for (let labeledData of this.labeledDatas) {
-      labels.push(labeledData.label);
-      data.push(labeledData.imageInfos.length);
-    }
-
-    this.summaryChartData = {
-      labels: labels,
-      datasets: [
-        {
-          data: data,
-          backgroundColor: this.summaryBarChartColors,
-        }
-      ]
-    };
   }
 
   private getClassIndex(id: number): number {
@@ -239,14 +140,11 @@ export class CollectionComponent {
 
     const thumbnailComponent = this.thumbnailComponent.toArray()[index];
     thumbnailComponent.deleteThumbnail(id);
-
-    this.drawSummary();
   }
 
   private async addThumbnail(index: number, imgStr: string, id: number): Promise<void> {
     const thumbnailComponent = this.thumbnailComponent.toArray()[index];
     thumbnailComponent.addThumbnail(imgStr, id);
-    this.drawSummary();
   }
 
   private addImage(index: number, imageInfo: ImageInfo): void {
@@ -291,6 +189,9 @@ export class CollectionComponent {
       inputNode.value = '';
     }
     this.isAddingImage = false;
+
+    this.commonService.setLabeledDatas(this.labeledDatas);
+    this.summaryComponent.drawSummary();
   }
 
   public async startRecord(index: number): Promise<void> {
@@ -315,6 +216,9 @@ export class CollectionComponent {
 
     this.recordLabel = 'Record'
     this.isAddingImage = false;
+
+    this.commonService.setLabeledDatas(this.labeledDatas);
+    this.summaryComponent.drawSummary();
   }
 
   public openWebcamArea(index: number): void {
@@ -408,6 +312,8 @@ export class CollectionComponent {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.deleteImageInList();
+        this.commonService.setLabeledDatas(this.labeledDatas);
+        this.summaryComponent.drawSummary();
       }
     });
 
@@ -433,6 +339,8 @@ export class CollectionComponent {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.deleteImageAll();
+        this.commonService.setLabeledDatas(this.labeledDatas);
+        this.summaryComponent.drawSummary();
       }
     });
   }
@@ -448,7 +356,6 @@ export class CollectionComponent {
     for (let i = 0; i < this.labeledDatas.length; i++) {
       this.changeLabelWidth(i);
     }
-    this.changeSummaryBarWidth();
     this.refreshLocalProject();
 
     this.commonService.setHistory(null);
@@ -464,6 +371,9 @@ export class CollectionComponent {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.refreshDataset();
+        this.commonService.setLabeledDatas(this.labeledDatas);
+        this.summaryComponent.changeSummaryBarWidth();
+        this.summaryComponent.drawSummary();
       }
     });
   }
@@ -486,7 +396,9 @@ export class CollectionComponent {
 
   public changeLabelName(index: number): void {
     this.changeLabelWidth(index);
-    this.drawSummary();
+
+    this.commonService.setLabeledDatas(this.labeledDatas);
+    this.summaryComponent.drawSummary();
   }
 
   public myTrackBy(index: number, obj: any): any {
@@ -509,12 +421,16 @@ export class CollectionComponent {
     }
     this.labeledDatas.push(new LabeledData(id));
 
-    this.drawSummary();
+    this.commonService.setLabeledDatas(this.labeledDatas);
+    this.summaryComponent.changeSummaryBarWidth();
+    this.summaryComponent.drawSummary();
 
     await this.utilService.sleep(100);
     this.changeLabelWidth(this.labeledDatas.length - 1);
-    this.changeSummaryBarWidth();
     this.refreshLocalProject();
+
+    this.commonService.setLabeledDatas(this.labeledDatas);
+    this.summaryComponent.drawSummary();
   }
 
   private refreshLocalProject(): void {
@@ -544,7 +460,6 @@ export class CollectionComponent {
       }
     }
 
-    this.changeSummaryBarWidth();
     this.refreshLocalProject();
   }
 
@@ -558,6 +473,10 @@ export class CollectionComponent {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.deleteClass(index);
+
+        this.commonService.setLabeledDatas(this.labeledDatas);
+        this.summaryComponent.changeSummaryBarWidth();
+        this.summaryComponent.drawSummary();
       }
     });
   }
@@ -589,7 +508,7 @@ export class CollectionComponent {
       }
       this.changeLabelWidth(i);
     }
-    this.changeSummaryBarWidth();
+    this.summaryComponent.changeSummaryBarWidth();
   }
 
   public async uploadDataset(): Promise<void> {
@@ -641,6 +560,10 @@ export class CollectionComponent {
     }
     this.drawLoadDatas();
     this.refreshLocalProject();
+
+    this.commonService.setLabeledDatas(this.labeledDatas);
+    this.summaryComponent.changeSummaryBarWidth();
+    this.summaryComponent.drawSummary();
   }
 
   async ngOnInit(): Promise<void> {

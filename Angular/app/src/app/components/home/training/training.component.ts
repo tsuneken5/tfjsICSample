@@ -2,7 +2,6 @@ import { Component, ViewChildren, ViewChild, QueryList } from '@angular/core';
 import * as tf from '@tensorflow/tfjs';
 
 import { ChartConfiguration } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 import * as constant from '../../../properties/constant';
 import { UtilService } from '../../../services/util.service';
@@ -16,6 +15,7 @@ import { Param } from '../../../models/param';
 
 import { ThumbnailComponent } from '../../shared/thumbnail/thumbnail.component';
 import { ProjectMenuComponent } from '../../shared/project-menu/project-menu.component';
+import { SummaryComponent } from '../../shared/summary/summary.component';
 
 @Component({
   selector: 'app-training',
@@ -26,6 +26,7 @@ import { ProjectMenuComponent } from '../../shared/project-menu/project-menu.com
 export class TrainingComponent {
   @ViewChildren(ThumbnailComponent) thumbnailComponent!: QueryList<ThumbnailComponent>;
   @ViewChild(ProjectMenuComponent) projectMenuComponent!: ProjectMenuComponent;
+  @ViewChild(SummaryComponent) summaryComponent!: SummaryComponent;
 
   public prefix: string = constant.PREFIX_TRAINING;
 
@@ -80,8 +81,6 @@ export class TrainingComponent {
 
   public isTraining: boolean = false;
   public displayReport: boolean = true;
-  public displaySummary: boolean = false;
-  private summaryBarWidth: number = constant.SUMMARY_BAR_WIDTH;
   public isCancelTraining: boolean = false;
 
   public reportLogLabals: string[] = ReportRogLabels;
@@ -132,41 +131,6 @@ export class TrainingComponent {
     },
   }
 
-  public viewSummarys: string[] = ['doughnut', 'bar']
-  public viewSummary: string = this.viewSummarys[0]
-
-  private summaryBarChartColors: string[] = constant.CHART_COLORS;
-  public summaryBarChartLegend = false;
-  public summaryBarChartPlugins = [
-    ChartDataLabels,
-  ];
-
-  public summaryChartData: any = {
-    labels: [],
-    datasets: [
-      { data: [] }
-    ]
-  };
-
-  public summaryChartDoughnutOptions: ChartConfiguration<'doughnut'>['options'] = {
-    responsive: false,
-    animation: false,
-    maintainAspectRatio: false,
-    cutout: 60,
-    plugins: {
-      tooltip: {
-        xAlign: 'center',
-        yAlign: 'center'
-      }
-    }
-  };
-
-  public summaryChartBarOptions: ChartConfiguration<'bar'>['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: false,
-  };
-
   constructor(
     private utilService: UtilService,
     private commonService: CommonService,
@@ -183,8 +147,6 @@ export class TrainingComponent {
     if (this.hasTrained() && this.history) {
       this.drawReport();
     }
-    this.changeSummaryBarWidth();
-    this.drawSummary();
   }
 
   public setDataset(args: any): void {
@@ -197,71 +159,11 @@ export class TrainingComponent {
     this.history = null;
     await this.utilService.sleep(100);
     this.initThumbnail();
+
+    this.summaryComponent.changeSummaryBarWidth();
+    this.summaryComponent.drawSummary();
   }
 
-  public changeSummary(): void {
-    const index = this.viewSummarys.indexOf(this.viewSummary);
-    this.viewSummary = this.viewSummarys[(index + 1) % this.viewSummarys.length];
-  }
-
-  private changeSummaryBarWidth(): void {
-    this.canTrain();
-    const area = document.getElementById('training-summary-bar') as HTMLElement;
-    const size = this.summaryBarWidth * this.trainClassList.length;
-    area.style.width = size + 'px';
-  }
-
-  public changeDisplaySummary(): void {
-    this.displaySummary = !this.displaySummary;
-  }
-
-  public summaryClick(event: any): void {
-    if (event.active.length > 0) {
-      const index = event.active[0].index;
-      let num = 0;
-      let sum = 0;
-      let label = ''
-      for (let i = 0; i < this.trainClassList.length; i++) {
-        sum += this.labeledDatas[this.trainClassList[i]].isTrainNum();
-        if (i == index) {
-          num = this.labeledDatas[this.trainClassList[i]].isTrainNum();
-          label = this.labeledDatas[this.trainClassList[i]].label;
-        }
-      }
-
-      const centerX = event.active[0].element.x;
-      const centerY = event.active[0].element.y;
-
-      const canvas = document.getElementById('training-summary') as HTMLCanvasElement;
-      const labels: string[] = [label, Math.round((num / sum) * 100) + ' %'];
-      const font = '15px Meiryo bold';
-      this.canvasService.drawCenteredLabels(canvas, labels, font, centerX, centerY);
-    }
-  }
-
-  private drawSummary(): void {
-    const labels: string[] = [];
-    const data: number[] = [];
-
-    if (!this.canTrain()) {
-      return;
-    }
-
-    for (let i = 0; i < this.trainClassList.length; i++) {
-      labels.push(this.labeledDatas[this.trainClassList[i]].label)
-      data.push(this.labeledDatas[this.trainClassList[i]].isTrainNum())
-    }
-
-    this.summaryChartData = {
-      labels: labels,
-      datasets: [
-        {
-          data: data,
-          backgroundColor: this.summaryBarChartColors,
-        }
-      ]
-    };
-  }
 
   private async addThumbnail(index: number, imgStr: string, id: number): Promise<void> {
     const thumbnailComponent = this.thumbnailComponent.toArray()[index];
@@ -307,8 +209,10 @@ export class TrainingComponent {
         break;
       }
     }
-    this.changeSummaryBarWidth();
-    this.drawSummary();
+
+    this.commonService.setLabeledDatas(this.labeledDatas);
+    this.summaryComponent.changeSummaryBarWidth();
+    this.summaryComponent.drawSummary();
   }
 
   public changeIsTrainClass(index: number): void {
@@ -326,8 +230,10 @@ export class TrainingComponent {
         thumbnailComponent.changeGrayScale(imageInfo.id);
       }
     }
-    this.changeSummaryBarWidth();
-    this.drawSummary();
+
+    this.commonService.setLabeledDatas(this.labeledDatas);
+    this.summaryComponent.changeSummaryBarWidth();
+    this.summaryComponent.drawSummary();
   }
 
   public clearIsTrainFlag(index: number): void {
@@ -342,8 +248,10 @@ export class TrainingComponent {
       imageInfo.isTrain = true;
       thumbnailComponent.drawThumbnail(imageInfo.base64, imageInfo.id);
     }
-    this.changeSummaryBarWidth();
-    this.drawSummary();
+
+    this.commonService.setLabeledDatas(this.labeledDatas);
+    this.summaryComponent.changeSummaryBarWidth();
+    this.summaryComponent.drawSummary();
   }
 
   public canTrainClass(index: number): boolean {

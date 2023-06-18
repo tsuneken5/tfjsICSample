@@ -37,39 +37,7 @@
 </mat-card>
 
 <!-- training summary -->
-<div id="training-summary-area" [hidden]="!canTrain()">
-  <mat-card class="summary-area">
-    <h3>training summary</h3>
-    <div class="containar" fxLayout="row">
-      <div class="summary" [hidden]="!displaySummary" [ngSwitch]="viewSummary">
-        <button mat-button class="delete-button delete-area" *ngIf="canTrain()" color="primary"
-          (click)="changeSummary()">
-          <mat-icon>compare_arrows</mat-icon>
-        </button>
-
-        <canvas baseChart id="training-summary" class="chart" *ngSwitchCase="viewSummarys[0]" width="500" height="300"
-          [data]="summaryChartData" [options]="summaryChartDoughnutOptions" [type]="'doughnut'"
-          (chartClick)="summaryClick($event)"></canvas>
-
-        <div id="training-summary-bar" class="chart">
-          <canvas baseChart *ngSwitchCase="viewSummarys[1]" height="300" [data]="summaryChartData"
-            [options]="summaryChartBarOptions" [plugins]="summaryBarChartPlugins" [legend]="summaryBarChartLegend"
-            [type]="'bar'"></canvas>
-        </div>
-      </div>
-    </div>
-  </mat-card>
-  <mat-card *ngIf="canTrain()">
-    <button mat-button color="primary" *ngIf="!displaySummary; else hiddenSummary" (click)="changeDisplaySummary()">
-      <mat-icon>keyboard_arrow_down</mat-icon>
-    </button>
-    <ng-template #hiddenSummary>
-      <button mat-button color="primary" (click)="changeDisplaySummary()">
-        <mat-icon>keyboard_arrow_up</mat-icon>
-      </button>
-    </ng-template>
-  </mat-card>
-</div>
+<app-summary [prefix]="prefix"></app-summary>
 
 <!-- train menu -->
 <mat-card class="train-menu-area">

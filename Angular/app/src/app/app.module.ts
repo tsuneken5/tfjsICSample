@@ -36,6 +36,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 
 import { NgChartsModule } from 'ng2-charts';
 import { NgxIndexedDBModule, DBConfig } from 'ngx-indexed-db';
+import { SummaryComponent } from './components/shared/summary/summary.component';
 
 const dbConfig: DBConfig = {
   name: 'project',
@@ -65,6 +66,7 @@ const dbConfig: DBConfig = {
     ProjectMenuComponent,
     AlartDialogComponent,
     ConfirmDialogComponent,
+    SummaryComponent,
   ],
   imports: [
     BrowserModule,

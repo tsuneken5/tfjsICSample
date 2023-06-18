@@ -20,8 +20,7 @@ $ docker-compose up -d
 open your browser on http://localhost:4200/
 
 # Wish List
-- IndexedDBへのプロジェクトの保存
-- データセットの追加
+- データセットの追加機能
 - Reactへの転記
 
 # Author

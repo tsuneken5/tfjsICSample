@@ -1,0 +1,31 @@
+<mat-card class="summary-area">
+  <h3>{{ summaryTitle }}</h3>
+  <div id="{{prefix}}-summary-area" class="containar" fxLayout="row" [hidden]="!displaySummary"
+    [ngSwitch]="viewSummary">
+    <div class="summary" [hidden]="!canDraw()">
+      <button mat-button class="delete-button delete-area" color="primary" (click)="changeSummary()">
+        <mat-icon>compare_arrows</mat-icon>
+      </button>
+      <canvas baseChart id="{{prefix}}-summary-doughnut" class="chart" *ngSwitchCase="viewSummarys[0]" width="500"
+        height="300" [data]="summaryChartData" [options]="summaryChartDoughnutOptions" [type]="'doughnut'"
+        (chartClick)="summaryClick($event)"></canvas>
+      <div id="{{ prefix }}-summary-bar" class="chart">
+        <canvas baseChart *ngSwitchCase="viewSummarys[1]" height="300" [data]="summaryChartData"
+          [options]="summaryChartBarOptions" [plugins]="summaryBarChartPlugins" [legend]="summaryBarChartLegend"
+          [type]="'bar'"></canvas>
+      </div>
+    </div>
+    <span class="summary-message" *ngIf="hasEmptyImage()">{{ summaryMessage }}</span>
+  </div>
+</mat-card>
+<mat-card>
+  <button mat-button color="primary" *ngIf="!displaySummary; else hiddenSummary" (click)="changeDisplaySummary()">
+    <mat-icon>keyboard_arrow_down</mat-icon>
+  </button>
+
+  <ng-template #hiddenSummary>
+    <button mat-button color="primary" (click)="changeDisplaySummary()">
+      <mat-icon>keyboard_arrow_up</mat-icon>
+    </button>
+  </ng-template>
+</mat-card>
