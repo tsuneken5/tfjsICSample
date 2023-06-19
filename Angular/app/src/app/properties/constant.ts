@@ -72,6 +72,18 @@ export const DEFAULT_HEIGHT_SHIFT_FLAG: boolean = false;
 export const DEFAULT_HEIGHT_SHIFT_RANGE: number = 0.1;
 export const DEFAULT_HORIZONTAL_FLIP_FLAG: boolean = false;
 export const DEFAULT_VERTICAL_FLIP_FLAG: boolean = false;
+export const MIN_LEARNING_RATE: number = 0.00001;
+
+// ReduceLROnPlateau
+export const DEFAULT_REDUSE_LRON_FLAG: boolean = false;
+export const DEFAULT_REDUSE_FACTOR: number = 0.5;
+export const DEFAULT_REDUSE_PATIENCE: number = 3;
+export const DEFAULT_REDUSE_MIN_DELTA: number = 0;
+
+// earlyStopping
+export const DEFAULT_EARLY_STOPPING_FLAG: boolean = false;
+export const DEFAULT_EARLY_STOPPING_PATIENCE: number = 10;
+export const DEFAULT_EARLY_STOPPING_MIN_DELTA: number = 0;
 
 export const DETECT_MENUS: Param[] = [
   new Param('File'), new Param('Webcam')

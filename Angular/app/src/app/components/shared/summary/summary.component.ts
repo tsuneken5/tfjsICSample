@@ -117,7 +117,6 @@ export class SummaryComponent {
   }
 
   public summaryClick(event: any): void {
-    console.log(event);
     if (event.active.length > 0) {
       const index = event.active[0].index;
       let num = 0;

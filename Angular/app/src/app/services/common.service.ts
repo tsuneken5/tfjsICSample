@@ -50,6 +50,16 @@ export class CommonService {
   private horizontalFlipFlag: boolean = constant.DEFAULT_HORIZONTAL_FLIP_FLAG;
   private verticalFlipFlag: boolean = constant.DEFAULT_VERTICAL_FLIP_FLAG;
 
+  // ReduceLROnPlateau
+  private reduceLROnFlag: boolean = constant.DEFAULT_REDUSE_LRON_FLAG;
+  private reduceFactor: number = constant.DEFAULT_REDUSE_FACTOR;
+  private reducePatience: number = constant.DEFAULT_REDUSE_PATIENCE;
+  private reduceMinDelta: number = constant.DEFAULT_REDUSE_MIN_DELTA;
+
+  // earlyStopping
+  private earlyStoppingFlag: boolean = constant.DEFAULT_EARLY_STOPPING_FLAG;
+  private earlyStopPatience: number = constant.DEFAULT_EARLY_STOPPING_PATIENCE;
+  private earlyStopMinDelta: number = constant.DEFAULT_EARLY_STOPPING_MIN_DELTA;
 
   private trainedClassIndex: number[] = [];
   private reportLogs: ReportLog[] = [];
@@ -350,6 +360,62 @@ export class CommonService {
 
   public setVerticalFlipFlag(verticalFlipFlag: boolean): void {
     this.verticalFlipFlag = verticalFlipFlag;
+  }
+
+  public getReduceLROnFlag(): boolean {
+    return this.reduceLROnFlag;
+  }
+
+  public setReduceLROnFlag(reduceLROnFlag: boolean): void {
+    this.reduceLROnFlag = reduceLROnFlag;
+  }
+
+  public getReduceFactor(): number {
+    return this.reduceFactor;
+  }
+
+  public setReduceFactor(reduceFactor: number): void {
+    this.reduceFactor = reduceFactor;
+  }
+
+  public getReducePatience(): number {
+    return this.reducePatience;
+  }
+
+  public setReducePatience(reducePatience: number): void {
+    this.reducePatience = reducePatience;
+  }
+
+  public getReduceMinDelta(): number {
+    return this.reduceMinDelta;
+  }
+
+  public setReduceMinDelta(reduceMinDelta: number): void {
+    this.reduceMinDelta = reduceMinDelta;
+  }
+
+  public getEarlyStoppingFlag(): boolean {
+    return this.earlyStoppingFlag;
+  }
+
+  public setEarlyStoppingFlag(earlyStoppingFlag: boolean): void {
+    this.earlyStoppingFlag = earlyStoppingFlag;
+  }
+
+  public getEarlyStopPatience(): number {
+    return this.earlyStopPatience;
+  }
+
+  public setEarlyStopPatience(earlyStopPatience: number): void {
+    this.earlyStopPatience = earlyStopPatience;
+  }
+
+  public getEarlyStopMinDelta(): number {
+    return this.earlyStopMinDelta;
+  }
+
+  public setEearlyStopMinDelta(earlyStopMinDelta: number) {
+    this.earlyStopMinDelta = earlyStopMinDelta;
   }
 
   public getTrainedIndexClass(): number[] {

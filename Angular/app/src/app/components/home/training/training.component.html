@@ -71,18 +71,19 @@
           <span class="param-title">Batch Size</span>
           <div class="params containar" fxLayout="column">
             <div class="input-area">
-              <input type="number" class="form-num" name="batch-size-num" required min="1" step="2"
+              <input type="number" class="form-num" name="batch-size-num" required min="2" step="2"
                 #batchSizeVal="ngModel" [(ngModel)]="batchSize" [disabled]="isTraining" appIntegerOnly>
             </div>
-            <div *ngIf="batchSizeVal.invalid" class="warn">Please enter a number greater than or equal to 1.</div>
+            <div *ngIf="batchSizeVal.invalid" class="warn">Please enter a number greater than or equal to 2.</div>
           </div>
 
           <!-- learning rate -->
           <span class="param-title">Learning Rate</span>
           <div class="params containar" fxLayout="column">
             <div class="input-area">
-              <input type="number" class="form-num" name="learning-rate-num" required min="0.00001" max="1"
-                step="0.00001" #learningRateVal="ngModel" [(ngModel)]="learningRate" [disabled]="isTraining">
+              <input type="number" class="form-num" name="learning-rate-num" required min="{{ minLearningRate }}"
+                max="1" step="{{ minLearningRate }}" #learningRateVal="ngModel" [(ngModel)]="learningRate"
+                [disabled]="isTraining">
             </div>
             <div *ngIf="learningRateVal.invalid" class="warn">Please enter a number between 0.00001 and 1.</div>
           </div>
@@ -99,6 +100,80 @@
 
         </div>
       </div>
+
+      <!-- ReduceLROnPlateau -->
+      <div class="container train-param-area" fxLayout="column">
+
+        <div class="param-type">ReduceLROnPlateau</div>
+
+        <mat-slide-toggle class="train-param-slide" name="reduce-lron-plateau-flag" color="primary"
+          [(ngModel)]="reduceLROnFlag" [disabled]="isTraining">
+          <span class="param-title">ReduceLROnPlateau</span>
+        </mat-slide-toggle>
+
+        <span class="param-title">Factor</span>
+        <div class="params containar" fxLayout="column">
+          <div class="input-area">
+            <input type="number" class="form-num" name="reduce-factor-num" required min="0.1" max="1" step="0.05"
+              #reduceFactorVal="ngModel" [(ngModel)]="reduceFactor" [disabled]="isTraining || !reduceLROnFlag">
+          </div>
+          <div *ngIf="reduceFactorVal.invalid" class="warn">Please enter a number between 0.1 and 1.</div>
+        </div>
+
+        <span class="param-title">Patience</span>
+        <div class="params containar" fxLayout="column">
+          <div class="input-area">
+            <input type="number" class="form-num" name="reduce-patience-num" required min="1"
+              #reducePatienceVal="ngModel" [(ngModel)]="reducePatience" [disabled]="isTraining || !reduceLROnFlag"
+              appIntegerOnly>
+          </div>
+          <div *ngIf="reducePatienceVal.invalid" class="warn">Please enter a number greater than or equal to 1.</div>
+        </div>
+
+        <span class="param-title">Min Delta</span>
+        <div class="params containar" fxLayout="column">
+          <div class="input-area">
+            <input type="number" class="form-num" name="reduce-min-delta-num" required min="0" step="0.01"
+              #reduceMinDeltaVal="ngModel" [(ngModel)]="reduceMinDelta" [disabled]="isTraining || !reduceLROnFlag">
+          </div>
+          <div *ngIf="reduceMinDeltaVal.invalid" class="warn">Please enter a number greater than or equal to 0.</div>
+        </div>
+
+      </div>
+
+      <!-- earlyStopping -->
+      <div class="container train-param-area" fxLayout="column">
+
+        <div class="param-type">Early Stopping</div>
+
+        <mat-slide-toggle class="train-param-slide" name="early-stopping-flag" color="primary"
+          [(ngModel)]="earlyStoppingFlag" [disabled]="isTraining">
+          <span class="param-title">Early Stopping</span>
+        </mat-slide-toggle>
+
+        <span class="param-title">Patience</span>
+        <div class="params containar" fxLayout="column">
+          <div class="input-area">
+            <input type="number" class="form-num" name="early-patience-num" required min="1"
+              #earlyStopPatienceVal="ngModel" [(ngModel)]="earlyStopPatience"
+              [disabled]="isTraining || !earlyStoppingFlag" appIntegerOnly>
+          </div>
+          <div *ngIf="earlyStopPatienceVal.invalid" class="warn">Please enter a number greater than or equal to 1.</div>
+        </div>
+
+        <span class="param-title">Min Delta</span>
+        <div class="params containar" fxLayout="column">
+          <div class="input-area">
+            <input type="number" class="form-num" name="early-min-delta-num" required min="0" step="0.01"
+              #earlyStopMinDeltaVal="ngModel" [(ngModel)]="earlyStopMinDelta"
+              [disabled]="isTraining || !earlyStoppingFlag">
+          </div>
+          <div *ngIf="earlyStopMinDeltaVal.invalid" class="warn">Please enter a number greater than or equal to 0.</div>
+        </div>
+
+      </div>
+
+      <!-- data augment -->
       <div class="container train-param-area" fxLayout="column">
         <div class="param-type">data augment parameter</div>
         <!-- augment rate -->

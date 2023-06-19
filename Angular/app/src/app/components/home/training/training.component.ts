@@ -1,4 +1,4 @@
-import { Component, ViewChildren, ViewChild, QueryList } from '@angular/core';
+import { Component, ViewChildren, ViewChild, QueryList, ComponentFactoryResolver } from '@angular/core';
 import * as tf from '@tensorflow/tfjs';
 
 import { ChartConfiguration } from 'chart.js';
@@ -12,6 +12,7 @@ import { DataAugmentService } from '../../../services/data-augment.service';
 import { LabeledData } from '../../../models/labeled-data';
 import { ReportLog, ReportRogLabels } from '../../../models/report-log';
 import { Param } from '../../../models/param';
+import { ReduceLROnPlateauCallback } from '../../../models/reduce-lron-plateau-callback';
 
 import { ThumbnailComponent } from '../../shared/thumbnail/thumbnail.component';
 import { ProjectMenuComponent } from '../../shared/project-menu/project-menu.component';
@@ -43,6 +44,18 @@ export class TrainingComponent {
   public batchSize: number = constant.DEFAULT_BACTH_SIZE;
   public learningRate: number = constant.DEFAULT_LEARNING_RATE;
   public validationSplit: number = constant.DEFAULT_VALIDATION_SPLIT;
+  public minLearningRate: number = constant.MIN_LEARNING_RATE;
+
+  // ReduceLROnPlateau
+  public reduceLROnFlag: boolean = false;
+  public reduceFactor: number = 0.5;
+  public reducePatience: number = 3;
+  public reduceMinDelta: number = 0;
+
+  // earlyStopping
+  public earlyStoppingFlag: boolean = false;
+  public earlyStopPatience: number = 10;
+  public earlyStopMinDelta: number = 0;
 
   // data augument parameter
   public augmentRateFlag: boolean = constant.DEFAULT_AUGMENT_RATE_FLAG;
@@ -534,8 +547,6 @@ export class TrainingComponent {
     this.cancelStatus = ''
 
     tf.engine().startScope();
-    console.log('start scope');
-    this.utilService.printMemory();
 
     this.trainingStatus = 'preparing model...';
     this.trainingRate = -1;
@@ -611,19 +622,34 @@ export class TrainingComponent {
     const yVal = tf.data.generator(valLabels);
     const val = tf.data.zip({ xs: xVal, ys: yVal }).shuffle(100).batch(this.batchSize);
 
-    this.utilService.printMemory();
     this.trainingStatus = 'training... 0 / ' + this.epochs;
     this.trainingRate = 0;
+
+    // earlystopiing
+    let earlyStopPatience = this.earlyStopPatience;
+    let earlyStopMinDelta = this.earlyStopMinDelta;
+    if (!this.earlyStoppingFlag) {
+      earlyStopPatience = this.epochs;
+    }
+
+    // ReduceLROnPlateau
+    let reduceFactor = this.reduceFactor;
+    let reducePatience = this.reducePatience;
+    let reduceMinDelta = this.reduceMinDelta;
+    if (!this.reduceLROnFlag) {
+      reduceFactor = 1;
+      reducePatience = this.epochs;
+    }
+
+    this.dataAugmentService.initCanvas();
 
     const preparingTime = performance.now() - startPreparing;
     const startTraining = performance.now();
 
-    this.dataAugmentService.initCanvas();
-
     const history = await this.model.fitDataset(train, {
       validationData: val,
       epochs: this.epochs,
-      callbacks: {
+      callbacks: [new tf.CustomCallback({
         onBatchEnd: () => {
           if (this.isCancelTraining) {
             this.cancelStatus = 'canceled training'
@@ -631,6 +657,11 @@ export class TrainingComponent {
           }
         },
         onEpochEnd: async (epoch: any, logs: any) => {
+          if (this.isCancelTraining) {
+            this.cancelStatus = 'canceled training'
+            this.model.stopTraining = true;
+          }
+
           const currentEpoch = epoch + 1
           this.trainingStatus = 'training... ' + (currentEpoch) + ' / ' + this.epochs;
 
@@ -642,12 +673,11 @@ export class TrainingComponent {
           this.trainingRate = Math.trunc(((currentEpoch) / Number(this.epochs)) * 100);
           console.log(currentEpoch, "log :", logs);
           this.utilService.printMemory();
-          if (this.isCancelTraining) {
-            this.cancelStatus = 'canceled training'
-            this.model.stopTraining = true;
-          }
         }
-      },
+      }),
+      tf.callbacks.earlyStopping({ monitor: 'loss', minDelta: earlyStopMinDelta, patience: earlyStopPatience }),
+      new ReduceLROnPlateauCallback(reduceFactor, reducePatience, reduceMinDelta)
+      ]
     });
 
     this.isTraining = false;
@@ -656,10 +686,7 @@ export class TrainingComponent {
 
     this.dataAugmentService.destroyCanvas();
 
-    this.utilService.printMemory();
-    console.log('end scope');
     tf.engine().endScope();
-    this.utilService.printMemory();
 
     if (!this.isCancelTraining) {
       const trainingTime = performance.now() - startTraining;
@@ -685,9 +712,6 @@ export class TrainingComponent {
       target.scrollIntoView(true);
     }
     tf.dispose(this.model);
-
-    console.log('dispose model');
-    this.utilService.printMemory();
 
     const proccessTime = performance.now() - start;
     console.log((new Date()).toString(), 'finish training', this.utilService.convertMsToTime(proccessTime));
@@ -750,6 +774,15 @@ export class TrainingComponent {
     this.heightShiftRange = this.commonService.getHeightShiftRange();
     this.horizontalFlipFlag = this.commonService.getHorizontalFlipFlag();
     this.verticalFlipFlag = this.commonService.getVerticalFlipFlag();
+
+    this.reduceLROnFlag = this.commonService.getReduceLROnFlag();
+    this.reduceFactor = this.commonService.getReduceFactor();
+    this.reducePatience = this.commonService.getReducePatience();
+    this.reduceMinDelta = this.commonService.getReduceMinDelta();
+
+    this.earlyStoppingFlag = this.commonService.getEarlyStoppingFlag();
+    this.earlyStopPatience = this.commonService.getEarlyStopPatience();
+    this.earlyStopMinDelta = this.commonService.getEarlyStopMinDelta();
   }
 
   private setTrainingParameter(): void {
@@ -788,6 +821,15 @@ export class TrainingComponent {
     this.commonService.setHeightShiftRange(this.heightShiftRange);
     this.commonService.setHorizontalFlipFlag(this.horizontalFlipFlag);
     this.commonService.setVerticalFlipFlag(this.verticalFlipFlag);
+
+    this.commonService.setReduceLROnFlag(this.reduceLROnFlag);
+    this.commonService.setReduceFactor(this.reduceFactor);
+    this.commonService.setReducePatience(this.reducePatience);
+    this.commonService.setReduceMinDelta(this.reduceMinDelta);
+
+    this.commonService.setEarlyStoppingFlag(this.earlyStoppingFlag);
+    this.commonService.setEarlyStopPatience(this.earlyStopPatience);
+    this.commonService.setEearlyStopMinDelta(this.earlyStopMinDelta);
   }
 
   ngOnInit(): void {
