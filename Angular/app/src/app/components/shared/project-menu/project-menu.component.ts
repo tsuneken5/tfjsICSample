@@ -26,6 +26,9 @@ export class ProjectMenuComponent {
   public deleteProjectName: string = '';
   public projects: string[] = [];
 
+  public includeParams: boolean = true;
+  public paramList: string[] = [];
+
   constructor(
     private commonService: CommonService,
     private dbService: NgxIndexedDBService,
@@ -72,15 +75,14 @@ export class ProjectMenuComponent {
 
     if (this.projects.includes(this.saveProjectName)) {
       await lastValueFrom(this.dbService
-        .update(constant.STORE_NAME, {
+        .update(constant.PROJECT_STORE_NAME, {
           project: this.saveProjectName,
           labeledDatas: labeledDatas,
           trainedClassList: trainedClassList,
         }));
-
     } else {
       await lastValueFrom(this.dbService
-        .add(constant.STORE_NAME, {
+        .add(constant.PROJECT_STORE_NAME, {
           project: this.saveProjectName,
           labeledDatas: labeledDatas,
           trainedClassList: trainedClassList,
@@ -93,6 +95,35 @@ export class ProjectMenuComponent {
       model.save('indexeddb://' + this.saveProjectName);
     }
     this.loadProjectName = this.saveProjectName;
+
+    if (this.includeParams) {
+      const trainingParam = this.commonService.getTrainingParam();
+      const augmentParam = this.commonService.getAugmentParam();
+      const callbacksParam = this.commonService.getCallbacksParam();
+
+      if (this.paramList.includes(this.saveProjectName)) {
+        await lastValueFrom(this.dbService
+          .update(constant.PARAM_STORE_NAME, {
+            project: this.saveProjectName,
+            training: trainingParam,
+            augment: augmentParam,
+            callbacks: callbacksParam,
+
+          }));
+      } else {
+        await lastValueFrom(this.dbService
+          .add(constant.PARAM_STORE_NAME, {
+            project: this.saveProjectName,
+            training: trainingParam,
+            augment: augmentParam,
+            callbacks: callbacksParam,
+          }));
+
+        this.paramList.push(this.saveProjectName);
+        this.paramList.sort();
+      }
+    }
+
     this.commonService.setProject(this.saveProjectName);
   }
 
@@ -102,7 +133,7 @@ export class ProjectMenuComponent {
       return;
     }
 
-    const result: any = await lastValueFrom(this.dbService.getByKey(constant.STORE_NAME, this.loadProjectName));
+    const result: any = await lastValueFrom(this.dbService.getByKey(constant.PROJECT_STORE_NAME, this.loadProjectName));
 
     const labeledDatas: LabeledData[] = [];
     for (let data of result.labeledDatas) {
@@ -119,7 +150,16 @@ export class ProjectMenuComponent {
       const model = await tf.loadLayersModel('indexeddb://' + this.loadProjectName);
       await model.save('indexeddb://' + constant.TMP_MODEL_NAME);
     }
-    this.getDataset.emit({});
+
+    if (this.includeParams && this.paramList.includes(this.loadProjectName)) {
+      const result: any = await lastValueFrom(this.dbService.getByKey(constant.PARAM_STORE_NAME, this.loadProjectName));
+
+      this.commonService.setTrainingParam(result.training);
+      this.commonService.setAugmentParam(result.augment);
+      this.commonService.setCallbacksParam(result.callbacks);
+    }
+
+    this.getDataset.emit();
 
     this.saveProjectName = this.loadProjectName;
     this.commonService.setProject(this.saveProjectName);
@@ -149,7 +189,7 @@ export class ProjectMenuComponent {
       return;
     }
 
-    const index = this.projects.indexOf(this.deleteProjectName);
+    let index = this.projects.indexOf(this.deleteProjectName);
     if (index < 0) {
       console.log('delete project name is not existed');
       this.deleteProjectName = '';
@@ -158,7 +198,7 @@ export class ProjectMenuComponent {
 
     this.projects.splice(index, 1);
 
-    await lastValueFrom(this.dbService.delete(constant.STORE_NAME, this.deleteProjectName));
+    await lastValueFrom(this.dbService.delete(constant.PROJECT_STORE_NAME, this.deleteProjectName));
 
     if (this.loadProjectName == this.deleteProjectName) {
       if (this.projects.length) {
@@ -182,13 +222,19 @@ export class ProjectMenuComponent {
       tf.io.removeModel('indexeddb://' + this.deleteProjectName);
     }
 
+    index = this.paramList.indexOf(this.deleteProjectName)
+    if (this.paramList.includes(this.deleteProjectName)) {
+      this.paramList.splice(index, 1);
+      await lastValueFrom(this.dbService.delete(constant.PARAM_STORE_NAME, this.deleteProjectName));
+    }
+
     this.deleteProjectName = '';
   }
 
   private async getProjectNames(): Promise<void> {
     this.projects = [];
 
-    const result: any = await lastValueFrom(this.dbService.getAll(constant.STORE_NAME));
+    const result: any = await lastValueFrom(this.dbService.getAll(constant.PROJECT_STORE_NAME));
 
     for (let project of result) {
       this.projects.push(project.project);
@@ -200,8 +246,23 @@ export class ProjectMenuComponent {
     }
   }
 
+  private async getParamList(): Promise<void> {
+    this.paramList = [];
+
+    const result: any = await lastValueFrom(this.dbService.getAll(constant.PARAM_STORE_NAME));
+
+    for (let param of result) {
+      this.paramList.push(param.project);
+    }
+
+    if (this.paramList) {
+      this.paramList.sort();
+    }
+  }
+
   async ngOnInit(): Promise<void> {
     await this.getProjectNames();
+    await this.getParamList();
 
     this.saveProjectName = this.commonService.getProject();
 

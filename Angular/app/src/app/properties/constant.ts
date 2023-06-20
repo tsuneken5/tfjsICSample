@@ -103,4 +103,5 @@ export const CHART_COLORS: string[] = [
   '#bfff7f',
 ];
 
-export const STORE_NAME: string = 'dataset';
+export const PROJECT_STORE_NAME: string = 'dataset';
+export const PARAM_STORE_NAME: string = 'param';

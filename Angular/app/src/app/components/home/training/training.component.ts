@@ -123,11 +123,13 @@ export class TrainingComponent {
 
   public setDataset(args: any): void {
     this.commonService.setLabeledDatas(this.labeledDatas);
+    this.setTrainingParameter();
     this.projectMenuComponent.addProject();
   }
 
   public async getDataset(args: any): Promise<void> {
     this.labeledDatas = this.commonService.getLabeledDatas();
+    this.getTrainingParameter();
     this.history = null;
     await this.utilService.sleep(100);
     this.initThumbnail();

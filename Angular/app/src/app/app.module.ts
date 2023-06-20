@@ -49,11 +49,19 @@ const dbConfig: DBConfig = {
         { name: 'project', keypath: 'project', options: { unique: true } },
         { name: 'labeledDatas', keypath: 'labeledDatas', options: { unique: false } },
         { name: 'trainedClassList', keypath: 'trainedClassList', options: { unique: false } },
+      ]
+    },
+    {
+      store: 'param',
+      storeConfig: { keyPath: 'project', autoIncrement: false },
+      storeSchema: [
+        { name: 'project', keypath: 'project', options: { unique: true } },
         { name: 'training', keypath: 'training', options: { unique: false } },
         { name: 'augment', keypath: 'augment', options: { unique: false } },
         { name: 'callbacks', keypath: 'callbacks', options: { unique: false } }
       ]
-    }]
+    },
+  ]
 };
 
 @NgModule({
