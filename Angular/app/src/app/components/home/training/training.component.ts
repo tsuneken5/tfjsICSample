@@ -17,6 +17,9 @@ import { ReduceLROnPlateauCallback } from '../../../models/reduce-lron-plateau-c
 import { ThumbnailComponent } from '../../shared/thumbnail/thumbnail.component';
 import { ProjectMenuComponent } from '../../shared/project-menu/project-menu.component';
 import { SummaryComponent } from '../../shared/summary/summary.component';
+import { TrainingParam } from '../../../models/training-param';
+import { AugmentParam } from '../../../models/augment-param';
+import { CallbacksParam } from '../../../models/callbacks-param';
 
 @Component({
   selector: 'app-training',
@@ -37,56 +40,12 @@ export class TrainingComponent {
   private trainClassList: number[] = [];
   public trainedClassList: number[] = [];
 
-  // training parameter
   public baseModelParams: Param[] = constant.BASE_MODEL_PARAMS;
-  public baseModel: string = constant.DEFAULT_BASE_MODEL;
-  public epochs: number = constant.DEFAULT_EPOCHS;
-  public batchSize: number = constant.DEFAULT_BACTH_SIZE;
-  public learningRate: number = constant.DEFAULT_LEARNING_RATE;
-  public validationSplit: number = constant.DEFAULT_VALIDATION_SPLIT;
   public minLearningRate: number = constant.MIN_LEARNING_RATE;
 
-  // ReduceLROnPlateau
-  public reduceLROnFlag: boolean = false;
-  public reduceFactor: number = 0.5;
-  public reducePatience: number = 3;
-  public reduceMinDelta: number = 0;
-
-  // earlyStopping
-  public earlyStoppingFlag: boolean = false;
-  public earlyStopPatience: number = 10;
-  public earlyStopMinDelta: number = 0;
-
-  // data augument parameter
-  public augmentRateFlag: boolean = constant.DEFAULT_AUGMENT_RATE_FLAG;
-  public augmentRate: number = constant.DEFAULT_AUGMENT_RATE;
-  public randomHueFlag: boolean = constant.DEFAULT_RANDOM_HUE_FLAG;
-  public randomHue: number = constant.DEFAULT_RANDOM_HUE;
-  public randomSaturationFlag: boolean = constant.DEFAULT_RANDOM_SATURATION_FLAG;
-  public randomSaturation: number = constant.DEFAULT_RANDOM_SATURATION;
-  public randomBrightnessFlag: boolean = constant.DEFAULT_RANDOM_BRIGHTNESS_FLAG;
-  public randomBrightness: number = constant.DEFAULT_RANDOM_BRIGHTNESS;
-  public randomContrastFlag: boolean = constant.DEFAULT_RANDOM_CONTRAST_FLAG;
-  public randomContrast: number = constant.DEFAULT_RANDOM_CONTRAST;
-  public grayscaleFlag: boolean = constant.DEFAULT_GRAYSCALE_FLAG;
-  public noiseInjectionFlag: boolean = constant.DEFAULT_NOISE_INJECTION_FLAG;
-  public noiseInjection: number = constant.DEFAULT_NOISE_INJECTION;
-  public blurFilterFlag: boolean = constant.DEFAULT_BLUR_FILTER_FLAG;
-  public blurFilter: number = constant.DEFAULT_BLUR_FILTER;
-  public cutOutFlag: boolean = constant.DEFAULT_CUT_OUT_FLAG;
-  public cutOutRange: number = constant.DEFAULT_CUT_OUT_RANGE;
-  public cropFlag: boolean = constant.DEFAULT_CROP_FLAG;
-  public cropRange: number = constant.DEFAULT_CROP_RANGE;
-  public shearFlag: boolean = constant.DEFAULT_SHEAR_FLAG;
-  public shearRange: number = constant.DEFAULT_SHEAR_RANGE;
-  public rotationFlag: boolean = constant.DEFAULT_ROTATION_FLAG;
-  public rotationRange: number = constant.DEFAULT_ROTATION_RANGE;
-  public widthShiftFlag: boolean = constant.DEFAULT_WIDTH_SHIFT_FLAG;
-  public widthShiftRange: number = constant.DEFAULT_WIDTH_SHIFT_RANGE;
-  public heightShiftFlag: boolean = constant.DEFAULT_HEIGHT_SHIFT_FLAG;
-  public heightShiftRange: number = constant.DEFAULT_HEIGHT_SHIFT_RANGE;
-  public horizontalFlipFlag: boolean = constant.DEFAULT_HORIZONTAL_FLIP_FLAG;
-  public verticalFlipFlag: boolean = constant.DEFAULT_VERTICAL_FLIP_FLAG;
+  public trainingParam: TrainingParam = new TrainingParam();
+  public augmentParam: AugmentParam = new AugmentParam();
+  public callbacksParam: CallbacksParam = new CallbacksParam();
 
   private model: any = null;
   private history: any = null;
@@ -289,7 +248,7 @@ export class TrainingComponent {
 
     this.model = tf.sequential();
 
-    const modelPath = 'assets/base/' + this.baseModel + '/model.json';
+    const modelPath = 'assets/base/' + this.trainingParam.baseModel + '/model.json';
     const featureModel = await tf.loadLayersModel(modelPath);
 
     for (let layer of featureModel.layers) {
@@ -309,7 +268,7 @@ export class TrainingComponent {
     this.model.add(featureModel);
     this.model.add(transferModel);
 
-    let optimizer = tf.train.adam(this.learningRate);
+    let optimizer = tf.train.adam(this.trainingParam.learningRate);
     let loss = (this.trainClassList.length == 2) ? 'binaryCrossentropy' : 'categoricalCrossentropy';
 
     this.model.compile({
@@ -322,18 +281,6 @@ export class TrainingComponent {
 
     const proccessTime = performance.now() - start;
     console.log((new Date()).toString(), 'finish build model', this.utilService.convertMsToTime(proccessTime));
-  }
-
-  private arrayShuffle(array: any[]): any[] {
-    for (let i = (array.length - 1); 0 < i; i--) {
-
-      let r = Math.floor(Math.random() * (i + 1));
-
-      let tmp = array[i];
-      array[i] = array[r];
-      array[r] = tmp;
-    }
-    return array;
   }
 
   private drawReport(): void {
@@ -387,6 +334,18 @@ export class TrainingComponent {
     };
   }
 
+  private arrayShuffle(array: any[]): any[] {
+    for (let i = (array.length - 1); 0 < i; i--) {
+
+      let r = Math.floor(Math.random() * (i + 1));
+
+      let tmp = array[i];
+      array[i] = array[r];
+      array[r] = tmp;
+    }
+    return array;
+  }
+
   private async createDataset(): Promise<{ trainImages: ImageData[], trainLabels: number[], valImages: ImageData[], valLabels: number[] }> {
     console.log((new Date()).toString(), 'start create datasets');
     const start = performance.now();
@@ -398,7 +357,7 @@ export class TrainingComponent {
 
     for (let index of this.trainClassList) {
       const trainNum = this.labeledDatas[index].isTrainNum();
-      const splitNum = Math.round(trainNum * this.validationSplit);
+      const splitNum = Math.round(trainNum * this.trainingParam.validationSplit);
       let count = 0;
       const imageInfos = this.arrayShuffle(this.labeledDatas[index].imageInfos.slice())
       for (let imageInfo of imageInfos) {
@@ -423,54 +382,54 @@ export class TrainingComponent {
 
   private dataAugment(data: ImageData): ImageData {
     // random_hue
-    if (this.randomHueFlag && this.utilService.randomBoolean(this.augmentRate)) {
-      const hueOffset = Math.random() * 360 * Number(this.randomHue);
+    if (this.augmentParam.randomHueFlag && this.utilService.randomBoolean(this.augmentParam.augmentRate)) {
+      const hueOffset = Math.random() * 360 * Number(this.augmentParam.randomHue);
       data = this.dataAugmentService.changeHue(data, hueOffset);
     }
 
     // random_saturation
-    if (this.randomSaturationFlag && this.utilService.randomBoolean(this.augmentRate)) {
-      const saturationRange = Number(this.randomSaturation);
+    if (this.augmentParam.randomSaturationFlag && this.utilService.randomBoolean(this.augmentParam.augmentRate)) {
+      const saturationRange = Number(this.augmentParam.randomSaturation);
       const saturationOffset = this.utilService.randomInt(-saturationRange * 100, saturationRange * 100) / 100;
       data = this.dataAugmentService.changeSaturation(data, saturationOffset);
     }
 
     // random_brightness
-    if (this.randomBrightnessFlag && this.utilService.randomBoolean(this.augmentRate)) {
-      const brightness = Number(this.randomBrightness);
+    if (this.augmentParam.randomBrightnessFlag && this.utilService.randomBoolean(this.augmentParam.augmentRate)) {
+      const brightness = Number(this.augmentParam.randomBrightness);
       const brightnessOffset = this.utilService.randomInt(-brightness * 100, brightness * 100) / 100;
       data = this.dataAugmentService.changeBrightness(data, brightnessOffset);
     }
 
     // random_contrast
-    if (this.randomContrastFlag && this.utilService.randomBoolean(this.augmentRate)) {
-      const contrastRange = Number(this.randomContrast);
+    if (this.augmentParam.randomContrastFlag && this.utilService.randomBoolean(this.augmentParam.augmentRate)) {
+      const contrastRange = Number(this.augmentParam.randomContrast);
       const contrastFactor = 1 - (this.utilService.randomInt(-contrastRange * 100, contrastRange * 100) / 100);
       data = this.dataAugmentService.changeContrast(data, contrastFactor);
     }
 
     // rgb_to_grayscale
-    if (this.grayscaleFlag && this.utilService.randomBoolean(this.augmentRate)) {
+    if (this.augmentParam.grayscaleFlag && this.utilService.randomBoolean(this.augmentParam.augmentRate)) {
       data = this.dataAugmentService.grayscale(data);
     }
 
     // noise_injection
-    if (this.noiseInjectionFlag && this.utilService.randomBoolean(this.augmentRate)) {
-      const noiseInjection = this.noiseInjection;
+    if (this.augmentParam.noiseInjectionFlag && this.utilService.randomBoolean(this.augmentParam.augmentRate)) {
+      const noiseInjection = this.augmentParam.noiseInjection;
       const sigma = this.utilService.randomInt(0, noiseInjection * 100) / 100;
       data = this.dataAugmentService.noiseInjection(data, sigma);
     }
 
     // blur_filter
-    if (this.blurFilterFlag && this.utilService.randomBoolean(this.augmentRate)) {
-      const blurFilter = this.blurFilter;
+    if (this.augmentParam.blurFilterFlag && this.utilService.randomBoolean(this.augmentParam.augmentRate)) {
+      const blurFilter = this.augmentParam.blurFilter;
       const radius = this.utilService.randomInt(0, blurFilter * 100) / 10;
-      data = this.dataAugmentService.blurFilter(data, this.blurFilter * 10);
+      data = this.dataAugmentService.blurFilter(data, this.augmentParam.blurFilter * 10);
     }
 
     // cut_out
-    if (this.cutOutFlag && this.utilService.randomBoolean(this.augmentRate)) {
-      const cutOutRange = Number(this.cutOutRange)
+    if (this.augmentParam.cutOutFlag && this.utilService.randomBoolean(this.augmentParam.augmentRate)) {
+      const cutOutRange = Number(this.augmentParam.cutOutRange)
       const cutWidth = this.utilService.randomInt(0, cutOutRange * data.width);
       const cutHeight = this.utilService.randomInt(0, cutOutRange * data.height);
       const x = this.utilService.randomInt(0, data.width - cutWidth);
@@ -480,8 +439,8 @@ export class TrainingComponent {
     }
 
     // random_crop
-    if (this.cropFlag && this.utilService.randomBoolean(this.augmentRate)) {
-      const randomCropRange = Number(this.cropRange);
+    if (this.augmentParam.cropFlag && this.utilService.randomBoolean(this.augmentParam.augmentRate)) {
+      const randomCropRange = Number(this.augmentParam.cropRange);
       const imageWidth = Math.round(data.width * randomCropRange);
       const imageHeight = Math.round(data.height * randomCropRange);
       const x = this.utilService.randomInt(0, data.width - imageWidth);
@@ -491,41 +450,41 @@ export class TrainingComponent {
     }
 
     // shear_range
-    if (this.shearFlag && this.utilService.randomBoolean(this.augmentRate)) {
-      const shearRamge = ((this.utilService.randomInt(Number(this.shearRange) * -1000, Number(this.shearRange) * 1000)) / 1000)
+    if (this.augmentParam.shearFlag && this.utilService.randomBoolean(this.augmentParam.augmentRate)) {
+      const shearRamge = ((this.utilService.randomInt(Number(this.augmentParam.shearRange) * -1000, Number(this.augmentParam.shearRange) * 1000)) / 1000)
       data = this.dataAugmentService.shear(data, Number(shearRamge));
     }
 
     // rotation_range
-    if (this.rotationFlag && this.utilService.randomBoolean(this.augmentRate)) {
-      const angle = this.utilService.randomInt(Number(this.rotationRange) * -1, Number(this.rotationRange))
+    if (this.augmentParam.rotationFlag && this.utilService.randomBoolean(this.augmentParam.augmentRate)) {
+      const angle = this.utilService.randomInt(Number(this.augmentParam.rotationRange) * -1, Number(this.augmentParam.rotationRange))
       data = this.dataAugmentService.rotation(data, angle);
     }
 
     // width_shift_range
     let widthSift = 0;
-    if (this.widthShiftFlag && this.utilService.randomBoolean(this.augmentRate)) {
-      const widthShiftRange = Number(this.widthShiftRange);
+    if (this.augmentParam.widthShiftFlag && this.utilService.randomBoolean(this.augmentParam.augmentRate)) {
+      const widthShiftRange = Number(this.augmentParam.widthShiftRange);
       widthSift = this.utilService.randomInt(widthShiftRange * data.width * -1, widthShiftRange * data.width);
     }
 
     // height_shift_range
     let heightSift = 0;
-    if (this.heightShiftFlag && this.utilService.randomBoolean(this.augmentRate)) {
-      const heightShiftRange = Number(this.heightShiftRange);
+    if (this.augmentParam.heightShiftFlag && this.utilService.randomBoolean(this.augmentParam.augmentRate)) {
+      const heightShiftRange = Number(this.augmentParam.heightShiftRange);
       heightSift = this.utilService.randomInt(heightShiftRange * data.height * -1, heightShiftRange * data.height);
     }
 
     data = this.dataAugmentService.shift(data, widthSift, heightSift);
     // horizontal_flip
     let horizontalFlip = 1;
-    if (this.horizontalFlipFlag && this.utilService.randomBoolean(this.augmentRate)) {
+    if (this.augmentParam.horizontalFlipFlag && this.utilService.randomBoolean(this.augmentParam.augmentRate)) {
       horizontalFlip = -1;
     }
 
     // vertical_flip 
     let verticalFlip = 1;
-    if (this.verticalFlipFlag && this.utilService.randomBoolean(this.augmentRate)) {
+    if (this.augmentParam.verticalFlipFlag && this.utilService.randomBoolean(this.augmentParam.augmentRate)) {
       verticalFlip = -1;
     }
     data = this.dataAugmentService.flip(data, horizontalFlip, verticalFlip);
@@ -562,7 +521,7 @@ export class TrainingComponent {
     const getTrainImages = function* () {
       const images = dataset.trainImages;
       for (let image of images) {
-        if (that.augmentRateFlag) {
+        if (that.augmentParam.augmentRateFlag) {
           image = that.dataAugment(image);
         }
         yield tf.tidy(() => {
@@ -587,7 +546,7 @@ export class TrainingComponent {
 
     const xTrain = tf.data.generator(trainImages);
     const yTrain = tf.data.generator(trainLabels);
-    const train = tf.data.zip({ xs: xTrain, ys: yTrain }).shuffle(100).batch(this.batchSize);
+    const train = tf.data.zip({ xs: xTrain, ys: yTrain }).shuffle(100).batch(this.trainingParam.batchSize);
 
     // create validation data
     tf.util.shuffleCombo(dataset.valImages, dataset.valLabels);
@@ -595,7 +554,7 @@ export class TrainingComponent {
     const getValImages = function* () {
       const images = dataset.valImages;
       for (let image of images) {
-        if (that.augmentRateFlag) {
+        if (that.augmentParam.augmentRateFlag) {
           image = that.dataAugment(image);
         }
         yield tf.tidy(() => {
@@ -620,25 +579,25 @@ export class TrainingComponent {
 
     const xVal = tf.data.generator(valImages);
     const yVal = tf.data.generator(valLabels);
-    const val = tf.data.zip({ xs: xVal, ys: yVal }).shuffle(100).batch(this.batchSize);
+    const val = tf.data.zip({ xs: xVal, ys: yVal }).shuffle(100).batch(this.trainingParam.batchSize);
 
-    this.trainingStatus = 'training... 0 / ' + this.epochs;
+    this.trainingStatus = 'training... 0 / ' + this.trainingParam.epochs;
     this.trainingRate = 0;
 
     // earlystopiing
-    let earlyStopPatience = this.earlyStopPatience;
-    let earlyStopMinDelta = this.earlyStopMinDelta;
-    if (!this.earlyStoppingFlag) {
-      earlyStopPatience = this.epochs;
+    let earlyStopPatience = this.callbacksParam.earlyStopPatience;
+    let earlyStopMinDelta = this.callbacksParam.earlyStopMinDelta;
+    if (!this.callbacksParam.earlyStoppingFlag) {
+      earlyStopPatience = this.trainingParam.epochs;
     }
 
     // ReduceLROnPlateau
-    let reduceFactor = this.reduceFactor;
-    let reducePatience = this.reducePatience;
-    let reduceMinDelta = this.reduceMinDelta;
-    if (!this.reduceLROnFlag) {
+    let reduceFactor = this.callbacksParam.reduceFactor;
+    let reducePatience = this.callbacksParam.reducePatience;
+    let reduceMinDelta = this.callbacksParam.reduceMinDelta;
+    if (!this.callbacksParam.reduceLROnFlag) {
       reduceFactor = 1;
-      reducePatience = this.epochs;
+      reducePatience = this.trainingParam.epochs;
     }
 
     this.dataAugmentService.initCanvas();
@@ -648,7 +607,7 @@ export class TrainingComponent {
 
     const history = await this.model.fitDataset(train, {
       validationData: val,
-      epochs: this.epochs,
+      epochs: this.trainingParam.epochs,
       callbacks: [new tf.CustomCallback({
         onBatchEnd: () => {
           if (this.isCancelTraining) {
@@ -663,14 +622,14 @@ export class TrainingComponent {
           }
 
           const currentEpoch = epoch + 1
-          this.trainingStatus = 'training... ' + (currentEpoch) + ' / ' + this.epochs;
+          this.trainingStatus = 'training... ' + (currentEpoch) + ' / ' + this.trainingParam.epochs;
 
           const elapsedTime = performance.now() - startTraining;
           const averageTime = elapsedTime / currentEpoch;
-          const remainingTime = averageTime * (Number(this.epochs) - currentEpoch);
+          const remainingTime = averageTime * (Number(this.trainingParam.epochs) - currentEpoch);
           this.trainingStatus += ', Estimated remaining time : ' + this.utilService.convertMsToTime(remainingTime);
 
-          this.trainingRate = Math.trunc(((currentEpoch) / Number(this.epochs)) * 100);
+          this.trainingRate = Math.trunc(((currentEpoch) / Number(this.trainingParam.epochs)) * 100);
           console.log(currentEpoch, "log :", logs);
           this.utilService.printMemory();
         }
@@ -739,97 +698,15 @@ export class TrainingComponent {
   }
 
   private getTrainingParameter(): void {
-    this.baseModel = this.commonService.getBaseModel();
-    this.epochs = this.commonService.getEpochs();
-    this.batchSize = this.commonService.getBatchSize();
-    this.learningRate = this.commonService.getLearningRate();
-    this.validationSplit = this.commonService.getValidationSplit();
-
-    this.augmentRateFlag = this.commonService.getAugmentRateFlag();
-    this.augmentRate = this.commonService.getAugmentRate();
-    this.randomHueFlag = this.commonService.getRandomHueFlag();
-    this.randomHue = this.commonService.getRandomHue();
-    this.randomSaturationFlag = this.commonService.getRandomSaturationFlag();
-    this.randomSaturation = this.commonService.getRandomSaturation();
-    this.randomBrightnessFlag = this.commonService.getRandomBrightnessFlag();
-    this.randomBrightness = this.commonService.getRandomBrightness();
-    this.randomContrastFlag = this.commonService.getRandomContrastFlag();
-    this.randomContrast = this.commonService.getRandomContrast();
-    this.grayscaleFlag = this.commonService.getGrayscaleFlag();
-    this.noiseInjectionFlag = this.commonService.getNoiseInjectionFlag();
-    this.noiseInjection = this.commonService.getNoiseInjection();
-    this.blurFilterFlag = this.commonService.getBlurFilterFlag();
-    this.blurFilter = this.commonService.getBlurFilter();
-    this.cutOutFlag = this.commonService.getCutOutFlag();
-    this.cutOutRange = this.commonService.getCutOutRange();
-    this.cropFlag = this.commonService.getCropFlag();
-    this.cropRange = this.commonService.getCropRange();
-    this.shearFlag = this.commonService.getShearFlag();
-    this.shearRange = this.commonService.getShearRange();
-    this.rotationFlag = this.commonService.getRotationFlag();
-    this.rotationRange = this.commonService.getRotationRange();
-    this.widthShiftFlag = this.commonService.getWidthShiftFlag();
-    this.widthShiftRange = this.commonService.getWidthShiftRange();
-    this.heightShiftFlag = this.commonService.getHeightShiftFlag();
-    this.heightShiftRange = this.commonService.getHeightShiftRange();
-    this.horizontalFlipFlag = this.commonService.getHorizontalFlipFlag();
-    this.verticalFlipFlag = this.commonService.getVerticalFlipFlag();
-
-    this.reduceLROnFlag = this.commonService.getReduceLROnFlag();
-    this.reduceFactor = this.commonService.getReduceFactor();
-    this.reducePatience = this.commonService.getReducePatience();
-    this.reduceMinDelta = this.commonService.getReduceMinDelta();
-
-    this.earlyStoppingFlag = this.commonService.getEarlyStoppingFlag();
-    this.earlyStopPatience = this.commonService.getEarlyStopPatience();
-    this.earlyStopMinDelta = this.commonService.getEarlyStopMinDelta();
+    this.trainingParam = this.commonService.getTrainingParam();
+    this.augmentParam = this.commonService.getAugmentParam();
+    this.callbacksParam = this.commonService.getCallbacksParam();
   }
 
   private setTrainingParameter(): void {
-    this.commonService.setBaseModel(this.baseModel);
-    this.commonService.setEpochs(this.epochs);
-    this.commonService.setBatchSize(this.batchSize);
-    this.commonService.setLearningRate(this.learningRate);
-    this.commonService.setValidationSplit(this.validationSplit);
-
-    this.commonService.setAugmentRateFlag(this.augmentRateFlag);
-    this.commonService.setAugmentRate(this.augmentRate);
-    this.commonService.setRandomHueFlag(this.randomHueFlag);
-    this.commonService.setRandomHue(this.randomHue);
-    this.commonService.setRandomSaturationFlag(this.randomSaturationFlag);
-    this.commonService.setRandomSaturation(this.randomSaturation);
-    this.commonService.setRandomBrightnessFlag(this.randomBrightnessFlag);
-    this.commonService.setRandomBrightness(this.randomBrightness);
-    this.commonService.setRandomContrastFlag(this.randomContrastFlag);
-    this.commonService.setRandomContrast(this.randomContrast);
-    this.commonService.setGrayscaleFlag(this.grayscaleFlag);
-    this.commonService.setNoiseInjectionFlag(this.noiseInjectionFlag);
-    this.commonService.setNoiseInjection(this.noiseInjection);
-    this.commonService.setBlurFilterFlag(this.blurFilterFlag);
-    this.commonService.setBlurFilter(this.blurFilter);
-    this.commonService.setCutOutFlag(this.cutOutFlag);
-    this.commonService.setCutOutRange(this.cutOutRange);
-    this.commonService.setCropFlag(this.cropFlag);
-    this.commonService.setCropRange(this.cropRange);
-    this.commonService.setShearFlag(this.shearFlag);
-    this.commonService.setShearRange(this.shearRange);
-    this.commonService.setRotationFlag(this.rotationFlag);
-    this.commonService.setRotationRange(this.rotationRange);
-    this.commonService.setWidthShiftFlag(this.widthShiftFlag);
-    this.commonService.setWidthShiftRange(this.widthShiftRange);
-    this.commonService.setHeightShiftFlag(this.heightShiftFlag);
-    this.commonService.setHeightShiftRange(this.heightShiftRange);
-    this.commonService.setHorizontalFlipFlag(this.horizontalFlipFlag);
-    this.commonService.setVerticalFlipFlag(this.verticalFlipFlag);
-
-    this.commonService.setReduceLROnFlag(this.reduceLROnFlag);
-    this.commonService.setReduceFactor(this.reduceFactor);
-    this.commonService.setReducePatience(this.reducePatience);
-    this.commonService.setReduceMinDelta(this.reduceMinDelta);
-
-    this.commonService.setEarlyStoppingFlag(this.earlyStoppingFlag);
-    this.commonService.setEarlyStopPatience(this.earlyStopPatience);
-    this.commonService.setEearlyStopMinDelta(this.earlyStopMinDelta);
+    this.commonService.setTrainingParam(this.trainingParam);
+    this.commonService.setAugmentParam(this.augmentParam);
+    this.commonService.setCallbacksParam(this.callbacksParam);
   }
 
   ngOnInit(): void {

@@ -67,6 +67,11 @@ h3 {
 
 .param-type {
   font-weight: bold;
+  margin-top: 5px;
+}
+
+.lower-column {
+  margin-top: 20px;
 }
 
 .param-title {

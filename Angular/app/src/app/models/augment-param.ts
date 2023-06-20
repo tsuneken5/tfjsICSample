@@ -1,0 +1,35 @@
+import * as constant from '../properties/constant';
+
+export class AugmentParam {
+  constructor(
+    public augmentRateFlag: boolean = constant.DEFAULT_AUGMENT_RATE_FLAG,
+    public augmentRate: number = constant.DEFAULT_AUGMENT_RATE,
+    public randomHueFlag: boolean = constant.DEFAULT_RANDOM_HUE_FLAG,
+    public randomHue: number = constant.DEFAULT_RANDOM_HUE,
+    public randomSaturationFlag: boolean = constant.DEFAULT_RANDOM_SATURATION_FLAG,
+    public randomSaturation: number = constant.DEFAULT_RANDOM_SATURATION,
+    public randomBrightnessFlag: boolean = constant.DEFAULT_RANDOM_BRIGHTNESS_FLAG,
+    public randomBrightness: number = constant.DEFAULT_RANDOM_BRIGHTNESS,
+    public randomContrastFlag: boolean = constant.DEFAULT_RANDOM_CONTRAST_FLAG,
+    public randomContrast: number = constant.DEFAULT_RANDOM_CONTRAST,
+    public grayscaleFlag: boolean = constant.DEFAULT_GRAYSCALE_FLAG,
+    public noiseInjectionFlag: boolean = constant.DEFAULT_NOISE_INJECTION_FLAG,
+    public noiseInjection: number = constant.DEFAULT_NOISE_INJECTION,
+    public blurFilterFlag: boolean = constant.DEFAULT_BLUR_FILTER_FLAG,
+    public blurFilter: number = constant.DEFAULT_BLUR_FILTER,
+    public cutOutFlag: boolean = constant.DEFAULT_CUT_OUT_FLAG,
+    public cutOutRange: number = constant.DEFAULT_CUT_OUT_RANGE,
+    public cropFlag: boolean = constant.DEFAULT_CROP_FLAG,
+    public cropRange: number = constant.DEFAULT_CROP_RANGE,
+    public shearFlag: boolean = constant.DEFAULT_SHEAR_FLAG,
+    public shearRange: number = constant.DEFAULT_SHEAR_RANGE,
+    public rotationFlag: boolean = constant.DEFAULT_ROTATION_FLAG,
+    public rotationRange: number = constant.DEFAULT_ROTATION_RANGE,
+    public widthShiftFlag: boolean = constant.DEFAULT_WIDTH_SHIFT_FLAG,
+    public widthShiftRange: number = constant.DEFAULT_WIDTH_SHIFT_RANGE,
+    public heightShiftFlag: boolean = constant.DEFAULT_HEIGHT_SHIFT_FLAG,
+    public heightShiftRange: number = constant.DEFAULT_HEIGHT_SHIFT_RANGE,
+    public horizontalFlipFlag: boolean = constant.DEFAULT_HORIZONTAL_FLIP_FLAG,
+    public verticalFlipFlag: boolean = constant.DEFAULT_VERTICAL_FLIP_FLAG,
+  ) { };
+}

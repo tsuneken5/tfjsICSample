@@ -41,16 +41,19 @@ import { SummaryComponent } from './components/shared/summary/summary.component'
 const dbConfig: DBConfig = {
   name: 'project',
   version: 1,
-  objectStoresMeta: [{
-    store: 'dataset',
-    storeConfig: { keyPath: 'project', autoIncrement: false },
-    storeSchema: [
-      // { name: 'name', keypath: 'name', options: { unique: true } },
-      { name: 'project', keypath: 'project', options: { unique: true } },
-      { name: 'labeledDatas', keypath: 'labeledDatas', options: { unique: false } },
-      { name: 'trainedClassList', keypath: 'trainedClassList', options: { unique: false } }
-    ]
-  }]
+  objectStoresMeta: [
+    {
+      store: 'dataset',
+      storeConfig: { keyPath: 'project', autoIncrement: false },
+      storeSchema: [
+        { name: 'project', keypath: 'project', options: { unique: true } },
+        { name: 'labeledDatas', keypath: 'labeledDatas', options: { unique: false } },
+        { name: 'trainedClassList', keypath: 'trainedClassList', options: { unique: false } },
+        { name: 'training', keypath: 'training', options: { unique: false } },
+        { name: 'augment', keypath: 'augment', options: { unique: false } },
+        { name: 'callbacks', keypath: 'callbacks', options: { unique: false } }
+      ]
+    }]
 };
 
 @NgModule({
