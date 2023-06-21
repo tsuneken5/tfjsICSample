@@ -35,6 +35,18 @@ export class ProjectMenuComponent {
     private dialog: MatDialog,
   ) { }
 
+  public initProjectName(): void {
+    this.saveProjectName = '';
+    this.deleteProjectName = '';
+    this.loadProjectName = '';
+
+    if (this.projects) {
+      this.loadProjectName = this.projects[0];
+    }
+
+    this.commonService.setProject(this.saveProjectName);
+  }
+
   public async saveProject(): Promise<void> {
     if (!this.saveProjectName) {
       const message = 'The project name has not been entered.'

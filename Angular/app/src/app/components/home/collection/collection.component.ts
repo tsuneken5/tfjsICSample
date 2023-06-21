@@ -374,6 +374,7 @@ export class CollectionComponent {
         this.commonService.setLabeledDatas(this.labeledDatas);
         this.summaryComponent.changeSummaryBarWidth();
         this.summaryComponent.drawSummary();
+        this.projectMenuComponent.initProjectName();
       }
     });
   }
@@ -564,6 +565,7 @@ export class CollectionComponent {
     this.commonService.setLabeledDatas(this.labeledDatas);
     this.summaryComponent.changeSummaryBarWidth();
     this.summaryComponent.drawSummary();
+    this.projectMenuComponent.initProjectName();
   }
 
   async ngOnInit(): Promise<void> {
