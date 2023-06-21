@@ -129,6 +129,7 @@
   </button>
 </mat-card>
 
+<!-- collection menu -->
 <mat-card class="menu-area">
   <h3>collection menu</h3>
   <div class="container" fxLayout="row">
@@ -160,11 +161,19 @@
       <mat-icon>download</mat-icon>
       download dataset
     </button>
+
     <button mat-button class="menu-button" color="primary" (click)="jsonInput.click()" [disabled]="openWebcamAreaFlg">
       <mat-icon>upload</mat-icon>
       upload dataset
     </button>
     <input hidden (change)="uploadDataset()" #jsonInput accept="application/json" type="file" id="json">
+
+    <button mat-button class="menu-button" color="primary" (click)="jsonAdd.click()" [disabled]="openWebcamAreaFlg">
+      <mat-icon>add_to_photos</mat-icon>
+      add dataset
+    </button>
+    <input hidden (change)="addDatasetForJson()" #jsonAdd accept="application/json" type="file" id="addJson">
+
   </div>
 </mat-card>
 

@@ -20,7 +20,6 @@ $ docker-compose up -d
 open your browser on http://localhost:4200/
 
 # Wish List
-- データセットの追加機能
 - Reactへの転記
 
 # Author

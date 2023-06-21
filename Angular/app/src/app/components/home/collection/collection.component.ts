@@ -512,6 +512,69 @@ export class CollectionComponent {
     this.summaryComponent.changeSummaryBarWidth();
   }
 
+  public async addDatasetForJson(): Promise<void> {
+    let inputNode: any = document.querySelector('#addJson');
+    if (inputNode.files.length > 0) {
+      const fileArray: File[] = [].slice.call(inputNode.files);
+
+      const reader = new FileReader();
+      reader.readAsText(fileArray[0]);
+      const datasets: any = await new Promise((resolve, reject) => {
+        reader.onload = function () {
+          resolve(JSON.parse(reader.result as string));
+        }
+        reader.onerror = function (error) {
+          console.log(error);
+          reject;
+        }
+      });
+      inputNode.value = '';
+
+      try {
+        const labelList: string[] = this.labeledDatas.map(function (o: LabeledData) { return o.label; });
+        for (let dataset of datasets.dataset) {
+          let classIndex = labelList.indexOf(dataset.label);
+          if (classIndex < 0) {
+            if (!this.canAddClass()) {
+              continue;
+            }
+            this.addClass();
+            classIndex = this.labeledDatas.length - 1;
+            this.labeledDatas[classIndex].label = dataset.label;
+          }
+          console.log(this.labeledDatas);
+          const base64List = this.labeledDatas[classIndex].imageInfos.map(function (o: ImageInfo) { return o.base64; });
+          for (let image of dataset.imageInfos) {
+            if (base64List.includes(image.base64 as string)) {
+              continue;
+            }
+            let imageInfo = new ImageInfo(
+              image.id as number,
+              image.base64 as string,
+              image.resizeWidth as number,
+              image.resizeHeight as number,
+              image.naturalWidth as number,
+              image.naturalHeight as number
+            );
+            imageInfo.isTrain = image.isTrain as boolean;
+
+            this.labeledDatas[classIndex].imageInfos.push(imageInfo);
+          }
+        }
+      } catch (error) {
+        this.refreshDataset();
+        console.log(error);
+      }
+    }
+    this.drawLoadDatas();
+    this.refreshLocalProject();
+
+    this.commonService.setLabeledDatas(this.labeledDatas);
+    this.summaryComponent.changeSummaryBarWidth();
+    this.summaryComponent.drawSummary();
+    this.projectMenuComponent.initProjectName();
+  }
+
   public async uploadDataset(): Promise<void> {
     this.deleteImageAll();
 
