@@ -41,6 +41,50 @@ export const DEFAULT_EPOCHS: number = 50;
 export const DEFAULT_BACTH_SIZE: number = 2;
 export const DEFAULT_LEARNING_RATE: number = 0.001;
 export const DEFAULT_VALIDATION_SPLIT: number = 0.2;
+export const DEFAULT_FINE_TUNING_FLAG: boolean = false;
+
+export const MOBILE_NET_V1_FINE_TUNING_LAYERS: string[] = [
+  'conv1',
+  'conv_pad_2',
+  'conv_dw_3',
+  'conv_pad_4',
+  'conv_dw_5',
+  'conv_pad_6',
+  'conv_dw_7',
+  'conv_dw_8',
+  'conv_dw_9',
+  'conv_dw_10',
+  'conv_dw_11',
+  'conv_pad_12',
+  'conv_dw_13',
+];
+export const MOBILE_NET_V2_FINE_TUNING_LAYERS: string[] = [
+  'Conv1',
+  'block_2_expand',
+  'block_3_expand',
+  'block_4_expand',
+  'block_5_expand',
+  'block_6_expand',
+  'block_7_expand',
+  'block_8_expand',
+  'block_9_expand',
+  'block_10_expand',
+  'block_11_expand',
+  'block_12_expand',
+  'block_13_expand',
+  'block_14_expand',
+  'block_15_expand',
+  'block_16_expand',
+];
+export const FINE_TUNING_LAYERS: any = {
+  mobilenet_v1: MOBILE_NET_V1_FINE_TUNING_LAYERS,
+  mobilenet_v2: MOBILE_NET_V2_FINE_TUNING_LAYERS
+}
+
+export const FINE_TUNING_LAYERS_SIZE: any = {
+  mobilenet_v1: MOBILE_NET_V1_FINE_TUNING_LAYERS.length,
+  mobilenet_v2: MOBILE_NET_V2_FINE_TUNING_LAYERS.length
+}
 
 // data augument parameter
 export const DEFAULT_AUGMENT_RATE_FLAG: boolean = false;

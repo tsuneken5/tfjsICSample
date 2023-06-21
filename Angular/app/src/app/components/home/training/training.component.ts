@@ -46,6 +46,7 @@ export class TrainingComponent {
   public trainingParam: TrainingParam = new TrainingParam();
   public augmentParam: AugmentParam = new AugmentParam();
   public callbacksParam: CallbacksParam = new CallbacksParam();
+  public fineTuningSize: any = constant.FINE_TUNING_LAYERS_SIZE;
 
   private model: any = null;
   private history: any = null;
@@ -253,8 +254,28 @@ export class TrainingComponent {
     const modelPath = 'assets/base/' + this.trainingParam.baseModel + '/model.json';
     const featureModel = await tf.loadLayersModel(modelPath);
 
-    for (let layer of featureModel.layers) {
-      layer.trainable = false;
+    // featureModel.summary();
+
+    if (this.trainingParam.fineTuningFlag) {
+      featureModel.trainable = true;
+      const tuningLayer = constant.FINE_TUNING_LAYERS[this.trainingParam.baseModel][this.trainingParam.fineTuningLayer - 1];
+      let fineTuningFlag = false;
+
+      for (let i = 0; i < featureModel.layers.length; i++) {
+        if (!fineTuningFlag && featureModel.layers[i].name == tuningLayer) {
+          fineTuningFlag = true;
+        }
+        if (fineTuningFlag) {
+          featureModel.layers[i].trainable = true;
+        } else {
+          featureModel.layers[i].trainable = false;
+        }
+      }
+    } else {
+      featureModel.trainable = false;
+      for (let i = 0; i < featureModel.layers.length; i++) {
+        console.log(featureModel.layers[i].name, featureModel.layers[i].trainable);
+      }
     }
 
     const inputShape = featureModel.outputs[0].shape.slice(1);
@@ -279,10 +300,12 @@ export class TrainingComponent {
       metrics: ['acc']
     });
 
-    // this.model.summary();
-
     const proccessTime = performance.now() - start;
     console.log((new Date()).toString(), 'finish build model', this.utilService.convertMsToTime(proccessTime));
+  }
+
+  public changeBaseModel(): void {
+    this.trainingParam.fineTuningLayer = this.fineTuningSize[this.trainingParam.baseModel];
   }
 
   private drawReport(): void {

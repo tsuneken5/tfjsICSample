@@ -53,7 +53,7 @@
           <div class="container params" fxLayout="column">
             <div *ngFor="let baseModelParam of baseModelParams">
               <input type="radio" name="baseModel" class="param-radio" value="{{ baseModelParam.value }}"
-                [(ngModel)]="trainingParam.baseModel" [disabled]="isTraining">
+                [(ngModel)]="trainingParam.baseModel" [disabled]="isTraining" (change)="changeBaseModel()">
               <span class="param-label">{{ baseModelParam.label}}</span>
             </div>
           </div>
@@ -98,6 +98,21 @@
                 [disabled]="isTraining">
             </div>
             <div *ngIf="validationSplitVal.invalid" class="warn">Please enter a number between 0.05 and 0.5.</div>
+          </div>
+
+          <!-- fine tuning-->
+          <mat-slide-toggle class="train-param-slide" name="fine-tuning-flag" color="primary"
+            [(ngModel)]="trainingParam.fineTuningFlag" [disabled]="isTraining">
+            <span class="param-title">Fine Tuning</span>
+          </mat-slide-toggle>
+          <div class="params containar" fxLayout="column">
+            <div class="input-area">
+              <input type="number" class="form-num" name="fine-tuning-layers" required min="1"
+                max="{{ fineTuningSize[trainingParam.baseModel] }}" #fineTuningLayerVal="ngModel"
+                [(ngModel)]="trainingParam.fineTuningLayer" [disabled]="isTraining || !trainingParam.fineTuningFlag">
+            </div>
+            <div *ngIf="fineTuningLayerVal.invalid" class="warn">Please enter a number between 1 and
+              {{ fineTuningSize[trainingParam.baseModel] }}</div>
           </div>
 
         </div>
