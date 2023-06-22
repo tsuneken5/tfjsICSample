@@ -20,6 +20,7 @@ import { SummaryComponent } from '../../shared/summary/summary.component';
 import { TrainingParam } from '../../../models/training-param';
 import { AugmentParam } from '../../../models/augment-param';
 import { CallbacksParam } from '../../../models/callbacks-param';
+import { ModelCheckpointCallback } from '../../../models/model-checkpoint-callback';
 
 @Component({
   selector: 'app-training',
@@ -273,9 +274,6 @@ export class TrainingComponent {
       }
     } else {
       featureModel.trainable = false;
-      for (let i = 0; i < featureModel.layers.length; i++) {
-        console.log(featureModel.layers[i].name, featureModel.layers[i].trainable);
-      }
     }
 
     const inputShape = featureModel.outputs[0].shape.slice(1);
@@ -625,7 +623,15 @@ export class TrainingComponent {
       reducePatience = this.trainingParam.epochs;
     }
 
+    // ModelCheckpoint
+    let checkpointEpoch = this.trainingParam.epochs / 10;
+    if (this.callbacksParam.earlyStoppingFlag) {
+      checkpointEpoch = this.callbacksParam.earlyStopPatience;
+    }
+    const checkpoint = new ModelCheckpointCallback(checkpointEpoch);
+
     this.dataAugmentService.initCanvas();
+    console.log('start training');
 
     const preparingTime = performance.now() - startPreparing;
     const startTraining = performance.now();
@@ -660,7 +666,8 @@ export class TrainingComponent {
         }
       }),
       tf.callbacks.earlyStopping({ monitor: 'loss', minDelta: earlyStopMinDelta, patience: earlyStopPatience }),
-      new ReduceLROnPlateauCallback(reduceFactor, reducePatience, reduceMinDelta)
+      new ReduceLROnPlateauCallback(reduceFactor, reducePatience, reduceMinDelta),
+        checkpoint
       ]
     });
 
@@ -674,6 +681,10 @@ export class TrainingComponent {
 
     if (!this.isCancelTraining) {
       const trainingTime = performance.now() - startTraining;
+
+      if (checkpoint.checkpoint) {
+        this.model = checkpoint.checkpoint;
+      }
 
       this.reportLogs = [];
       this.reportLogs.push(new ReportLog('preparing time', this.utilService.convertMsToTime(preparingTime)));

@@ -1,5 +1,4 @@
 import * as tf from '@tensorflow/tfjs';
-
 import * as constant from '../properties/constant';
 
 export class ReduceLROnPlateauCallback extends tf.Callback {
